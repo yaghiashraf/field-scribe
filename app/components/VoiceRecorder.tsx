@@ -20,6 +20,11 @@ export function VoiceRecorder({ onTranscriptionComplete }: Props) {
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const stopStream = () => {
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+  };
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -27,11 +32,6 @@ export function VoiceRecorder({ onTranscriptionComplete }: Props) {
       stopStream();
     };
   }, []);
-
-  const stopStream = () => {
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    streamRef.current = null;
-  };
 
   const startRecording = async () => {
     setErrorMessage(null);

@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
 import { PhotoUploader } from "../components/PhotoUploader";
 import { VoiceRecorder } from "../components/VoiceRecorder";
 import { ReportGenerator } from "../components/ReportGenerator";
@@ -40,40 +39,36 @@ const defaultDetails: InspectionDetailsData = {
   date: new Date().toISOString().split("T")[0],
 };
 
-// Inner component that uses useSearchParams (requires Suspense boundary)
+/** Read stored draft once at component initialisation (avoids setState-in-effect). */
+function loadDraft(): DraftData | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as DraftData) : null;
+  } catch {
+    return null;
+  }
+}
+
 function DashboardInner() {
-  const [notes, setNotes] = useState<NoteEntry[]>([]);
-  const [imageAnalyses, setImageAnalyses] = useState<ImageEntry[]>([]);
-  const [details, setDetails] = useState<InspectionDetailsData>(defaultDetails);
-  const [lastSaved, setLastSaved] = useState<string | null>(null);
-  const [hydrated, setHydrated] = useState(false);
-  const [showSuccessBanner, setShowSuccessBanner] = useState(false);
+  // All state is lazily initialised from localStorage — no setState inside effects.
+  const [notes, setNotes] = useState<NoteEntry[]>(() => loadDraft()?.notes ?? []);
+  const [imageAnalyses, setImageAnalyses] = useState<ImageEntry[]>(
+    () => loadDraft()?.imageAnalyses ?? []
+  );
+  const [details, setDetails] = useState<InspectionDetailsData>(
+    () => loadDraft()?.details ?? defaultDetails
+  );
+  const [lastSaved, setLastSaved] = useState<string | null>(
+    () => loadDraft()?.lastSaved ?? null
+  );
+  // Read Stripe success param directly from the URL at mount — no effect needed.
+  const [showSuccessBanner, setShowSuccessBanner] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return new URLSearchParams(window.location.search).get("success") === "true";
+  });
 
-  const searchParams = useSearchParams();
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const draft: DraftData = JSON.parse(stored);
-        if (draft.details) setDetails(draft.details);
-        if (draft.notes) setNotes(draft.notes);
-        if (draft.imageAnalyses) setImageAnalyses(draft.imageAnalyses);
-        if (draft.lastSaved) setLastSaved(draft.lastSaved);
-      }
-    } catch {
-      // Ignore parse errors
-    }
-    setHydrated(true);
-
-    // Show success banner if redirected from Stripe
-    if (searchParams.get("success") === "true") {
-      setShowSuccessBanner(true);
-    }
-  }, [searchParams]);
-
-  // Auto-save to localStorage whenever state changes
+  // Auto-save: debounced write to localStorage, no setState in the effect body.
   const saveDraft = useCallback(() => {
     const now = new Date().toLocaleTimeString();
     const draft: DraftData = { notes, imageAnalyses, details, lastSaved: now };
@@ -85,11 +80,11 @@ function DashboardInner() {
     }
   }, [notes, imageAnalyses, details]);
 
+  // The only side-effect: schedule a debounced save whenever data changes.
   useEffect(() => {
-    if (!hydrated) return;
     const timer = setTimeout(saveDraft, 800);
     return () => clearTimeout(timer);
-  }, [notes, imageAnalyses, details, hydrated, saveDraft]);
+  }, [saveDraft]);
 
   const handleAddNote = (text: string) => {
     setNotes((prev) => [
@@ -131,8 +126,6 @@ function DashboardInner() {
     localStorage.removeItem(STORAGE_KEY);
     setLastSaved(null);
   };
-
-  if (!hydrated) return null;
 
   const noteTexts = notes.map((n) => n.text);
   const imageDescriptions = imageAnalyses.map((img) => img.description);
@@ -305,11 +298,6 @@ function DashboardInner() {
   );
 }
 
-// Outer wrapper — provides Suspense boundary required for useSearchParams
 export default function Dashboard() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-50" />}>
-      <DashboardInner />
-    </Suspense>
-  );
+  return <DashboardInner />;
 }
