@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Check, Zap, Shield, FileText, Camera, Mic, Layout, Star, ChevronDown } from "lucide-react";
 import { createCheckoutSession } from "./actions/checkout";
@@ -61,19 +62,25 @@ export default function LandingPage() {
               <ABTestCTA />
               <div className="flex items-center gap-2 text-sm text-slate-500 mt-2 sm:mt-0">
                 <div className="flex -space-x-3">
-                  <img 
+                  <Image 
                     src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" 
                     alt="Inspector 1"
+                    width={32}
+                    height={32}
                     className="w-8 h-8 rounded-full border-2 border-white object-cover"
                   />
-                  <img 
+                  <Image 
                     src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces" 
                     alt="Inspector 2"
+                    width={32}
+                    height={32}
                     className="w-8 h-8 rounded-full border-2 border-white object-cover"
                   />
-                  <img 
+                  <Image 
                     src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces" 
                     alt="Inspector 3"
+                    width={32}
+                    height={32}
                     className="w-8 h-8 rounded-full border-2 border-white object-cover"
                   />
                 </div>
@@ -112,7 +119,7 @@ export default function LandingPage() {
           <div className="text-center max-w-3xl mx-auto mb-20">
             <h2 className="text-indigo-600 font-bold tracking-wide uppercase text-sm mb-3">Core Features</h2>
             <h3 className="text-4xl font-extrabold text-slate-900 mb-6">Everything you need to finish fast.</h3>
-            <p className="text-xl text-slate-500">We stripped away the bloat. No complex menus, no "CRM" features you don't use. Just scan, speak, and send.</p>
+            <p className="text-xl text-slate-500">We stripped away the bloat. No complex menus, no &quot;CRM&quot; features you don&apos;t use. Just scan, speak, and send.</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-12">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Upload, Loader2, AlertCircle } from "lucide-react";
 import { analyzeImage } from "../actions/analyze-image";
 
@@ -98,7 +99,13 @@ export function PhotoUploader({ onAnalysisComplete }: { onAnalysisComplete: (res
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
                 {images.map((img) => (
                 <div key={img.id} className="relative group aspect-square bg-slate-100 rounded-lg overflow-hidden border border-slate-200 shadow-sm">
-                    <img src={img.preview} alt="Upload" className="object-cover w-full h-full" />
+                    <Image 
+                      src={img.preview} 
+                      alt="Upload" 
+                      fill
+                      className="object-cover w-full h-full" 
+                      unoptimized // Blob URLs cannot be optimized by Next.js server
+                    />
                     
                     {/* Status Overlay */}
                     <div className={`absolute inset-0 flex flex-col justify-end p-2 transition-all duration-300
