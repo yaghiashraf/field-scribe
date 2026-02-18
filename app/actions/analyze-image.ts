@@ -11,11 +11,16 @@ export async function analyzeImage(formData: FormData) {
   }
 
   const arrayBuffer = await file.arrayBuffer();
+  // Convert to native Blob for HF client
+  const blob = new Blob([arrayBuffer], { type: file.type });
+  // For chatCompletion with base64
   const buffer = Buffer.from(arrayBuffer);
   const base64Image = `data:${file.type};base64,${buffer.toString("base64")}`;
 
+  // Try high-quality VLM first, then fallback to standard image captioning
   try {
-    // Using Qwen2.5-VL-7B-Instruct via Chat Completion API
+    // 1. Try Qwen2.5-VL (Best for details)
+    console.log("Attempting vision analysis with Qwen/Qwen2.5-VL-7B-Instruct");
     const response = await hf.chatCompletion({
       model: "Qwen/Qwen2.5-VL-7B-Instruct",
       messages: [
@@ -24,7 +29,7 @@ export async function analyzeImage(formData: FormData) {
           content: [
             {
               type: "text",
-              text: "Analyze this image for a home inspection report. Identify any visible defects, safety hazards, or maintenance issues. Be specific about materials and condition. Keep it concise.",
+              text: "Describe this image for a home inspection. Mention any defects, materials, or conditions visible. Concise.",
             },
             {
               type: "image_url",
@@ -35,15 +40,26 @@ export async function analyzeImage(formData: FormData) {
           ],
         },
       ],
-      max_tokens: 300,
+      max_tokens: 200,
     });
-
     return { success: true, description: response.choices[0].message.content };
-  } catch (error) {
-    console.error("Vision AI Error:", error);
-    return {
-      success: false,
-      error: "Failed to analyze image. Please try again.",
-    };
+  } catch (qwenError) {
+    console.warn("Qwen vision failed, trying fallback BLIP:", qwenError);
+    
+    try {
+      // 2. Try BLIP (Very reliable, simple caption)
+      // Note: hf.imageToText expects 'data' as Blob or ArrayBuffer
+      const response = await hf.imageToText({
+        model: "Salesforce/blip-image-captioning-large",
+        data: blob,
+      });
+      return { success: true, description: response.generated_text };
+    } catch (blipError) {
+      console.error("All vision models failed:", blipError);
+      return {
+        success: false,
+        error: "Unable to analyze image. AI services are currently unavailable.",
+      };
+    }
   }
 }

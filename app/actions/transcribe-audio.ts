@@ -4,12 +4,13 @@ import { HfInference } from "@huggingface/inference";
 
 const hf = new HfInference(process.env.HF_ACCESS_TOKEN);
 
-// List of models to try in order of preference/quality
+// Expanded list of models to try
 const ASR_MODELS = [
-  "openai/whisper-large-v3",
   "openai/whisper-large-v3-turbo",
-  "openai/whisper-medium",
-  "openai/whisper-tiny.en" // Ultimate fallback, very fast and widely available
+  "distil-whisper/distil-large-v3", 
+  "openai/whisper-small",
+  "openai/whisper-tiny.en",
+  "facebook/wav2vec2-large-960h-lv60-self" // Non-Whisper fallback
 ];
 
 export async function transcribeAudio(formData: FormData) {
@@ -32,6 +33,7 @@ export async function transcribeAudio(formData: FormData) {
       });
 
       if (response && response.text) {
+        console.log(`Success with ${model}`);
         return { success: true, text: response.text };
       }
     } catch (error) {
@@ -45,7 +47,7 @@ export async function transcribeAudio(formData: FormData) {
   return {
     success: false,
     error: lastError instanceof Error 
-      ? `All models failed. Last error: ${lastError.message}` 
-      : "Failed to transcribe audio with all available models.",
+      ? `AI Busy: ${lastError.message}` 
+      : "Failed to transcribe audio. Please try again.",
   };
 }

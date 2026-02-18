@@ -9,8 +9,11 @@ export function ABTestCTA() {
 
   useEffect(() => {
     // Simple 50/50 split based on random
-    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/rules-of-hooks
-    setVariant(Math.random() > 0.5 ? "B" : "A");
+    // Defer to avoid synchronous state update warning
+    const timer = setTimeout(() => {
+      setVariant(Math.random() > 0.5 ? "B" : "A");
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const text = variant === "A" ? "Start Your First Report" : "Get Professional in Seconds";
