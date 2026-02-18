@@ -27,8 +27,10 @@ export function PhotoUploader({ onAnalysisComplete }: { onAnalysisComplete: (res
       const res = await analyzeImage(formData);
       
       if (res.success) {
-        setImages(prev => [...prev, { file, preview, analysis: res.description }]);
-        onAnalysisComplete(res.description);
+        // Fallback for when AI returns null/undefined
+        const description = res.description || "No description available";
+        setImages(prev => [...prev, { file, preview, analysis: description }]);
+        onAnalysisComplete(description);
       }
     }
     setIsAnalyzing(false);

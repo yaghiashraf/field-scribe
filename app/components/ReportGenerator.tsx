@@ -15,11 +15,11 @@ export function ReportGenerator({ notes, imageAnalyses }: ReportGeneratorProps) 
 
   const handleGenerate = async () => {
     setIsGenerating(true);
-    const combinedNotes = notes.join("
-");
+    // Use explicit newline character to avoid parsing issues
+    const combinedNotes = notes.join("\n");
     const res = await generateReport(combinedNotes, imageAnalyses);
     if (res.success) {
-      setReport(res.report);
+      setReport(res.report || "No report generated.");
     }
     setIsGenerating(false);
   };
@@ -27,7 +27,10 @@ export function ReportGenerator({ notes, imageAnalyses }: ReportGeneratorProps) 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-slate-900">Inspection Report</h2>
+        <h2 className="text-xl font-semibold text-slate-900 mb-4 flex items-center">
+          <span className="bg-indigo-100 text-indigo-700 w-8 h-8 rounded-full flex items-center justify-center text-sm mr-3">3</span>
+          Report Preview
+        </h2>
         <button
           onClick={handleGenerate}
           disabled={isGenerating || (notes.length === 0 && imageAnalyses.length === 0)}

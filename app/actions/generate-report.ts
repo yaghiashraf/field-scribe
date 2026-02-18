@@ -5,14 +5,16 @@ import { HfInference } from "@huggingface/inference";
 const hf = new HfInference(process.env.HF_ACCESS_TOKEN);
 
 export async function generateReport(notes: string, imageDescriptions: string[]) {
+  // Use explicit newline for joining descriptions to avoid build issues
+  const formattedDescriptions = imageDescriptions.map((desc, i) => `  ${i + 1}. ${desc}`).join("\n");
+
   const prompt = `
 You are an expert Home Inspector. Your task is to write a professional, liability-proof inspection report section based on the provided raw notes and image findings.
 
 **Input Data:**
 - Inspector's Voice Notes: "${notes}"
 - Image Findings: 
-${imageDescriptions.map((desc, i) => `  ${i + 1}. ${desc}`).join("
-")}
+${formattedDescriptions}
 
 **Instructions:**
 1. Organize the findings by room or system (e.g., Electrical, Plumbing, Roof).

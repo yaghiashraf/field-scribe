@@ -24,7 +24,7 @@ export function VoiceRecorder({ onTranscriptionComplete }: { onTranscriptionComp
 
       const res = await transcribeAudio(formData);
       if (res.success) {
-        onTranscriptionComplete(res.text);
+        onTranscriptionComplete(res.text || "No transcription available");
       }
       setIsProcessing(false);
     };
