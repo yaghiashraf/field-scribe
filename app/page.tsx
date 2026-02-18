@@ -60,12 +60,22 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
               <ABTestCTA />
               <div className="flex items-center gap-2 text-sm text-slate-500 mt-2 sm:mt-0">
-                <div className="flex -space-x-2">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-500">
-                      {String.fromCharCode(64 + i)}
-                    </div>
-                  ))}
+                <div className="flex -space-x-3">
+                  <img 
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" 
+                    alt="Inspector 1"
+                    className="w-8 h-8 rounded-full border-2 border-white object-cover"
+                  />
+                  <img 
+                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces" 
+                    alt="Inspector 2"
+                    className="w-8 h-8 rounded-full border-2 border-white object-cover"
+                  />
+                  <img 
+                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces" 
+                    alt="Inspector 3"
+                    className="w-8 h-8 rounded-full border-2 border-white object-cover"
+                  />
                 </div>
                 <span>Used by 500+ inspectors</span>
               </div>
