@@ -7,30 +7,39 @@ import { transcribeAudio } from "../actions/transcribe-audio";
 export function VoiceRecorder({ onTranscriptionComplete }: { onTranscriptionComplete: (text: string) => void }) {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const mediaRecorder = useRef<MediaRecorder | null>(null);
 
   const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder.current = new MediaRecorder(stream);
-    const chunks: Blob[] = [];
+    setErrorMessage(null); // Clear previous errors
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder.current = new MediaRecorder(stream);
+      const chunks: Blob[] = [];
 
-    mediaRecorder.current.ondataavailable = (e) => chunks.push(e.data);
-    mediaRecorder.current.onstop = async () => {
-      setIsProcessing(true);
-      const blob = new Blob(chunks, { type: "audio/webm" });
-      const file = new File([blob], "recording.webm", { type: "audio/webm" });
-      const formData = new FormData();
-      formData.append("file", file);
+      mediaRecorder.current.ondataavailable = (e) => chunks.push(e.data);
+      mediaRecorder.current.onstop = async () => {
+        setIsProcessing(true);
+        const blob = new Blob(chunks, { type: "audio/webm" });
+        const file = new File([blob], "recording.webm", { type: "audio/webm" });
+        const formData = new FormData();
+        formData.append("file", file);
 
-      const res = await transcribeAudio(formData);
-      if (res.success) {
-        onTranscriptionComplete(res.text || "No transcription available");
-      }
-      setIsProcessing(false);
-    };
+        const res = await transcribeAudio(formData);
+        if (res.success) {
+          onTranscriptionComplete(res.text || "No transcription available");
+        } else {
+          setErrorMessage(res.error || "Transcription failed");
+        }
+        setIsProcessing(false);
+      };
 
-    mediaRecorder.current.start();
-    setIsRecording(true);
+      mediaRecorder.current.start();
+      setIsRecording(true);
+    } catch (err) {
+      console.error("Microphone access denied:", err);
+      setErrorMessage("Microphone access denied. Please allow permissions.");
+    }
   };
 
   const stopRecording = () => {
@@ -57,9 +66,14 @@ export function VoiceRecorder({ onTranscriptionComplete }: { onTranscriptionComp
             <span>Transcribing audio...</span>
           </div>
         ) : (
-          <p className="text-sm text-slate-500">
-            {isRecording ? "Recording... Describe the room and defects." : "Click microphone to start recording observations."}
-          </p>
+          <div>
+            <p className="text-sm text-slate-500">
+              {isRecording ? "Recording... Describe the room and defects." : "Click microphone to start recording observations."}
+            </p>
+            {errorMessage && (
+              <p className="text-xs text-red-500 mt-1">{errorMessage}</p>
+            )}
+          </div>
         )}
       </div>
     </div>

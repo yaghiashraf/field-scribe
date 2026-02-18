@@ -15,16 +15,17 @@ export async function transcribeAudio(formData: FormData) {
 
   try {
     const response = await hf.automaticSpeechRecognition({
-      model: "openai/whisper-large-v3-turbo",
+      model: "distil-whisper/distil-large-v3",
       data: blob,
     });
 
     return { success: true, text: response.text };
   } catch (error) {
     console.error("Transcription Error:", error);
+    // Return the actual error message for debugging
     return {
       success: false,
-      error: "Failed to transcribe audio. Please try again.",
+      error: error instanceof Error ? error.message : "Failed to transcribe audio",
     };
   }
 }
