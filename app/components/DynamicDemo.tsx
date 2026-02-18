@@ -52,7 +52,7 @@ export function DynamicDemo() {
                   <Mic className="w-4 h-4" /> Voice Note
                 </div>
                 <p className="text-sm text-slate-700 italic">
-                  "Uh, check the master bath... looks like there's some, uh, significant water staining under the sink. Might be a slow leak from the P-trap. Also, no GFCI outlet near the vanity."
+                  &quot;Uh, check the master bath... looks like there&apos;s some, uh, significant water staining under the sink. Might be a slow leak from the P-trap. Also, no GFCI outlet near the vanity.&quot;
                 </p>
               </div>
             </div>

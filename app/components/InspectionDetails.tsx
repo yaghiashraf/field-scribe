@@ -1,7 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
 export interface InspectionDetailsData {
   inspectorName: string;
   companyName: string;

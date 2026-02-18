@@ -67,7 +67,7 @@ export function ProductShowcase() {
                     Defect Detected
                   </div>
                   <div className="absolute bottom-4 left-4 right-4 bg-white/90 p-2 rounded shadow-sm text-xs text-slate-700">
-                    "Cracked stucco exterior wall, approx 3ft length."
+                    &quot;Cracked stucco exterior wall, approx 3ft length.&quot;
                   </div>
                 </div>
               </div>
@@ -99,7 +99,7 @@ export function ProductShowcase() {
               </div>
               <div className="space-y-2 text-center">
                 <p className="text-slate-900 font-medium">Recording Voice Note...</p>
-                <p className="text-slate-400 text-sm">"North wall shows significant water damage..."</p>
+                <p className="text-slate-400 text-sm">&quot;North wall shows significant water damage...&quot;</p>
               </div>
             </motion.div>
           )}

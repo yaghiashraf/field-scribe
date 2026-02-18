@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Check, Zap, Shield, FileText, Camera, Mic, Layout, Star, ChevronDown, Menu } from "lucide-react";
+import { Check, Zap, Shield, FileText, Camera, Mic, Layout, Star, ChevronDown } from "lucide-react";
 import { createCheckoutSession } from "./actions/checkout";
 import { ProductShowcase } from "./components/ProductShowcase";
 import { DynamicDemo } from "./components/DynamicDemo";
@@ -132,7 +132,7 @@ export default function LandingPage() {
               icon={<Shield className="h-8 w-8 text-white" />}
               color="bg-green-500"
               title="Liability Guard"
-              description="Our AI rewrites 'fix the leak' into 'Qualified plumber to evaluate moisture intrusion', protecting you from lawsuits."
+              description="Our AI rewrites &apos;fix the leak&apos; into &apos;Qualified plumber to evaluate moisture intrusion&apos;, protecting you from lawsuits."
             />
           </div>
         </div>
