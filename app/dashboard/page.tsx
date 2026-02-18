@@ -43,7 +43,7 @@ export default function Dashboard() {
               <div className="mt-4 space-y-2">
                 {notes.map((note, i) => (
                   <div key={i} className="p-3 bg-slate-50 rounded-md text-sm text-slate-700 border border-slate-100">
-                    "{note}"
+                    &quot;{note}&quot;
                   </div>
                 ))}
               </div>

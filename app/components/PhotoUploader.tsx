@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Upload, X, Loader2, FileText } from "lucide-react";
+import { Upload, Loader2 } from "lucide-react";
 import { analyzeImage } from "../actions/analyze-image";
 
 interface ImageResult {
