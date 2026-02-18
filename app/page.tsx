@@ -143,7 +143,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">See the magic in action.</h2>
           <p className="text-slate-400 max-w-2xl mx-auto mb-12 text-lg">
-            Don't take our word for it. Switch tabs below to see how raw, messy field data becomes a polished client-ready report.
+            Don&apos;t take our word for it. Switch tabs below to see how raw, messy field data becomes a polished client-ready report.
           </p>
           <DynamicDemo />
         </div>

@@ -14,13 +14,13 @@ interface ImageResult {
 
 export function PhotoUploader({ onAnalysisComplete }: { onAnalysisComplete: (result: string) => void }) {
   const [images, setImages] = useState<ImageResult[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
+  // Removed unused state: isUploading
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const files = Array.from(e.target.files);
 
-    setIsUploading(true);
+    // Process images concurrently
 
     // 1. Prepare all new images with "pending" status
     const newImages: ImageResult[] = files.map(file => ({
@@ -58,7 +58,7 @@ export function PhotoUploader({ onAnalysisComplete }: { onAnalysisComplete: (res
               : pImg
           ));
         }
-      } catch (err) {
+      } catch {
         setImages(prev => prev.map(pImg => 
           pImg.id === img.id 
             ? { ...pImg, status: "error", analysis: "Network error" } 
@@ -67,7 +67,6 @@ export function PhotoUploader({ onAnalysisComplete }: { onAnalysisComplete: (res
       }
     }));
 
-    setIsUploading(false);
     e.target.value = ""; // Reset input
   };
 

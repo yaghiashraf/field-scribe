@@ -9,7 +9,6 @@ export function ABTestCTA() {
 
   useEffect(() => {
     // Simple 50/50 split based on random
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     setVariant(Math.random() > 0.5 ? "B" : "A");
   }, []);
 
