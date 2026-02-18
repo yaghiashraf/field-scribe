@@ -1,6 +1,5 @@
 "use client";
 
-import { User } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export interface InspectionDetailsData {
@@ -23,6 +22,8 @@ export function InspectionDetails({ details, onChange }: InspectionDetailsProps)
     onChange({ ...details, [name]: value });
   };
 
+  const inputClasses = "w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border text-slate-900 bg-white placeholder:text-slate-400";
+
   return (
     <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
       <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center">
@@ -40,7 +41,7 @@ export function InspectionDetails({ details, onChange }: InspectionDetailsProps)
             name="inspectorName"
             value={details.inspectorName}
             onChange={handleChange}
-            className="w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+            className={inputClasses}
             placeholder="John Doe"
           />
         </div>
@@ -54,7 +55,7 @@ export function InspectionDetails({ details, onChange }: InspectionDetailsProps)
             name="date"
             value={details.date}
             onChange={handleChange}
-            className="w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+            className={inputClasses}
           />
         </div>
         <div>
@@ -67,7 +68,7 @@ export function InspectionDetails({ details, onChange }: InspectionDetailsProps)
             name="companyName"
             value={details.companyName}
             onChange={handleChange}
-            className="w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+            className={inputClasses}
             placeholder="Acme Inspections LLC"
           />
         </div>
@@ -81,7 +82,7 @@ export function InspectionDetails({ details, onChange }: InspectionDetailsProps)
             name="companyAddress"
             value={details.companyAddress}
             onChange={handleChange}
-            className="w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+            className={inputClasses}
             placeholder="123 Main St, Springfield"
           />
         </div>
@@ -95,7 +96,7 @@ export function InspectionDetails({ details, onChange }: InspectionDetailsProps)
             name="clientName"
             value={details.clientName}
             onChange={handleChange}
-            className="w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+            className={inputClasses}
             placeholder="Jane Smith"
           />
         </div>
@@ -109,7 +110,7 @@ export function InspectionDetails({ details, onChange }: InspectionDetailsProps)
             name="propertyAddress"
             value={details.propertyAddress}
             onChange={handleChange}
-            className="w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+            className={inputClasses}
             placeholder="456 Oak Lane"
           />
         </div>

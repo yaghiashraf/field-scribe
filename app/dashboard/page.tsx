@@ -26,8 +26,9 @@ export default function Dashboard() {
             <span className="bg-indigo-600 text-white p-1 rounded">FS</span>
             New Inspection
           </h1>
-          <div className="text-sm text-slate-500">
-            Auto-saving...
+          <div className="text-sm font-medium text-slate-500 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-green-500"></span>
+            Draft Mode
           </div>
         </div>
       </header>
