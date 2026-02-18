@@ -5,12 +5,15 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "FieldScribe - AI Home Inspection Report Software | Lifetime Deal",
-  description: "Generate professional home inspection reports in seconds with AI. Voice-to-text, photo analysis, and liability protection. One-time payment, no subscriptions.",
-  keywords: "home inspection software, ai report generator, spectora alternative, field report app, fieldscribe, home inspector tools",
+  title: "FieldScribe — AI Home Inspection Report Software",
+  description:
+    "Generate professional home inspection reports in seconds with AI. Voice-to-text, photo analysis, and liability protection. One-time payment, no subscriptions.",
+  keywords:
+    "home inspection software, ai report generator, spectora alternative, field report app, fieldscribe, home inspector tools, inspection report ai",
   openGraph: {
-    title: "FieldScribe - AI Home Inspection Report Software",
-    description: "Turn site photos and messy voice notes into professional, liability-proof inspection reports in seconds.",
+    title: "FieldScribe — AI Home Inspection Report Software",
+    description:
+      "Turn site photos and messy voice notes into professional, liability-proof inspection reports in seconds.",
     url: "https://field-scribe.vercel.app",
     siteName: "FieldScribe",
     locale: "en_US",
@@ -18,13 +21,14 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "FieldScribe - AI Home Inspection Report Software",
-    description: "Turn site photos and messy voice notes into professional, liability-proof inspection reports in seconds.",
+    title: "FieldScribe — AI Home Inspection Report Software",
+    description:
+      "Turn site photos and messy voice notes into professional, liability-proof inspection reports in seconds.",
   },
   robots: {
     index: true,
     follow: true,
-  }
+  },
 };
 
 export default function RootLayout({
@@ -34,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={`${inter.className} antialiased`}>{children}</body>
     </html>
   );
 }

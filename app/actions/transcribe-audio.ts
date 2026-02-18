@@ -2,52 +2,58 @@
 
 import { HfInference } from "@huggingface/inference";
 
-const hf = new HfInference(process.env.HF_ACCESS_TOKEN);
-
-// Expanded list of models to try
+// Only models confirmed active on hf-inference provider (as of 2025-2026)
 const ASR_MODELS = [
-  "openai/whisper-large-v3-turbo",
-  "distil-whisper/distil-large-v3", 
-  "openai/whisper-small",
-  "openai/whisper-tiny.en",
-  "facebook/wav2vec2-large-960h-lv60-self" // Non-Whisper fallback
+  "openai/whisper-large-v3-turbo", // Fastest + near-identical accuracy to v3
+  "openai/whisper-large-v3",       // Highest accuracy fallback
 ];
 
 export async function transcribeAudio(formData: FormData) {
+  const token = process.env.HF_ACCESS_TOKEN;
+
+  if (!token || token === "hf_placeholder") {
+    return {
+      success: false,
+      error: "AI service not configured. Set HF_ACCESS_TOKEN in environment.",
+    };
+  }
+
   const file = formData.get("file") as File;
   if (!file) {
-    throw new Error("No audio file uploaded");
+    return { success: false, error: "No audio file provided." };
   }
 
   const arrayBuffer = await file.arrayBuffer();
-  const blob = new Blob([arrayBuffer], { type: file.type });
+  // Pass as ArrayBuffer – HfInference accepts ArrayBuffer for ASR
+  const audioData = arrayBuffer;
 
-  let lastError: unknown;
+  const hf = new HfInference(token);
 
   for (const model of ASR_MODELS) {
     try {
-      console.log(`Attempting transcription with model: ${model}`);
+      console.log(`[FieldScribe] Transcription → ${model}`);
+
       const response = await hf.automaticSpeechRecognition({
-        model: model,
-        data: blob,
+        model,
+        data: audioData,
       });
 
-      if (response && response.text) {
-        console.log(`Success with ${model}`);
-        return { success: true, text: response.text };
+      const text = response?.text?.trim();
+
+      if (text && text.length > 0) {
+        console.log(`[FieldScribe] ✓ Transcription success → ${model}`);
+        return { success: true, text };
       }
-    } catch (error) {
-      console.warn(`Model ${model} failed:`, error);
-      lastError = error;
-      // Continue to next model
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn(`[FieldScribe] ASR failed (${model}): ${msg}`);
+      // Try next model
     }
   }
 
-  console.error("All transcription models failed.");
   return {
     success: false,
-    error: lastError instanceof Error 
-      ? `AI Busy: ${lastError.message}` 
-      : "Failed to transcribe audio. Please try again.",
+    error:
+      "Transcription service busy. Please wait 30 seconds and try again, or type notes manually.",
   };
 }
