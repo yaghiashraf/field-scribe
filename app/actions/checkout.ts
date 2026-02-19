@@ -2,21 +2,20 @@
 
 import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-type CheckoutResult =
-  | { url: string; error?: never }
-  | { error: string; url?: never };
-
-export async function createCheckoutSession(): Promise<CheckoutResult> {
+export async function createCheckoutSession(_formData?: FormData) {
   const priceId = process.env.STRIPE_PRICE_ID;
 
+  // We cannot return data to the client if we are using this as a form action that might redirect.
+  // Instead, we will redirect to an error page or back to dashboard with a query param if something fails.
+  
   if (!priceId) {
-    return { url: "/dashboard?stripe_setup=true" };
+    redirect("/dashboard?error=stripe_setup_missing");
   }
 
   const headersList = await headers();
 
-  // Robustly determine origin — Vercel sets x-forwarded-host, not origin
   const origin = (() => {
     const raw = headersList.get("origin");
     if (raw) return raw;
@@ -26,22 +25,32 @@ export async function createCheckoutSession(): Promise<CheckoutResult> {
     return "http://localhost:3000";
   })();
 
+  let sessionUrl: string | undefined;
+
   try {
     const session = await stripe.checkout.sessions.create({
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "payment",
-      success_url: `${origin}/api/verify-access?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${origin}/dashboard?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/?canceled=true`,
       allow_promotion_codes: true,
       customer_creation: "always",
       billing_address_collection: "auto",
     });
 
-    if (!session.url) return { error: "Stripe did not return a checkout URL." };
-    return { url: session.url };
+    if (session.url) {
+      sessionUrl = session.url;
+    }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("[FieldScribe] Stripe checkout error:", msg);
-    return { error: msg };
+    // In a server action, we can't easily alert, so we redirect to show the error
+    redirect(`/?payment_error=true&error=${encodeURIComponent(msg)}`);
+  }
+
+  if (sessionUrl) {
+    redirect(sessionUrl);
+  } else {
+    redirect("/?payment_error=true&reason=no_url");
   }
 }
