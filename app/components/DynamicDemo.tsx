@@ -42,27 +42,52 @@ export function DynamicDemo() {
             className="grid md:grid-cols-2 gap-8"
           >
             <div className="space-y-4">
-              {/* Real inspection photo — water damage under bathroom sink */}
-              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                <div className="relative aspect-video rounded-lg overflow-hidden mb-3">
-                  <Image
+              {/* Stacked Photos Container */}
+              <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative h-64 flex items-center justify-center overflow-visible">
+                {/* Photo 3 (Bottom) */}
+                <div className="absolute w-4/5 aspect-video bg-slate-100 rounded-lg shadow-sm transform -rotate-6 translate-y-2 opacity-80 border border-white">
+                   <Image
                     src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=640&h=360&fit=crop&crop=center"
-                    alt="Older bathroom sink showing potential water damage and staining"
+                    alt="Bathroom Angle 3"
                     fill
-                    className="object-cover"
+                    className="object-cover rounded-lg"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    unoptimized
+                  />
+                </div>
+                {/* Photo 2 (Middle) */}
+                <div className="absolute w-4/5 aspect-video bg-slate-100 rounded-lg shadow-md transform rotate-3 translate-x-2 border border-white">
+                   <Image
+                    src="https://images.unsplash.com/photo-1620626012053-8aa206426336?w=640&h=360&fit=crop&crop=center"
+                    alt="Bathroom Angle 2"
+                    fill
+                    className="object-cover rounded-lg"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    unoptimized
+                  />
+                </div>
+                {/* Photo 1 (Top) */}
+                <div className="absolute w-4/5 aspect-video bg-slate-100 rounded-lg shadow-lg transform -rotate-2 -translate-y-2 border-2 border-white z-10">
+                  <Image
+                    src="https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=640&h=360&fit=crop&crop=center"
+                    alt="Bathroom Angle 1"
+                    fill
+                    className="object-cover rounded-lg"
                     sizes="(max-width: 768px) 100vw, 50vw"
                     unoptimized
                   />
                   {/* Overlay label */}
                   <div className="absolute top-2 left-2 bg-black/50 text-white text-[10px] font-mono px-2 py-1 rounded backdrop-blur-sm">
-                    IMG_2024_0847.jpg
+                    IMG_Batch_003
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 text-center">
-                  Site photo — master bathroom
+                
+                <p className="absolute -bottom-6 text-xs text-slate-500 text-center w-full">
+                  Uploaded 3 photos — master bathroom
                 </p>
               </div>
-              <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100 shadow-sm">
+
+              <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100 shadow-sm mt-8">
                 <div className="flex items-center gap-2 mb-2 text-indigo-700 font-semibold text-sm">
                   <Mic className="w-4 h-4" /> Voice Note
                 </div>
