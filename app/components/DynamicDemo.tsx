@@ -69,8 +69,8 @@ export function DynamicDemo() {
                 {/* Photo 1 (Top) */}
                 <div className="absolute w-4/5 aspect-video bg-slate-100 rounded-lg shadow-lg transform -rotate-2 -translate-y-2 border-2 border-white z-10">
                   <Image
-                    src="https://images.unsplash.com/photo-1554995207-c18c203602cb?w=640&h=360&fit=crop&crop=center"
-                    alt="Bathroom Angle 1"
+                    src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=640&h=360&fit=crop&crop=center"
+                    alt="Bathroom sink cabinet with water damage"
                     fill
                     className="object-cover rounded-lg"
                     sizes="(max-width: 768px) 100vw, 50vw"
