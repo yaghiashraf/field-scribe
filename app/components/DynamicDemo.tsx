@@ -46,8 +46,8 @@ export function DynamicDemo() {
               <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                 <div className="relative aspect-video rounded-lg overflow-hidden mb-3">
                   <Image
-                    src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=640&h=360&fit=crop&crop=center"
-                    alt="Bathroom sink showing potential water damage and staining"
+                    src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=640&h=360&fit=crop&crop=center"
+                    alt="Older bathroom sink showing potential water damage and staining"
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -80,7 +80,7 @@ export function DynamicDemo() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3 }}
-            className="prose prose-sm max-w-none bg-white p-8 rounded-xl border border-slate-200 shadow-sm font-mono text-slate-800"
+            className="prose prose-sm max-w-none bg-white p-8 rounded-xl border border-slate-200 shadow-sm font-mono text-slate-800 text-left"
           >
             <h3 className="text-indigo-900 mt-0">Master Bathroom Inspection</h3>
             <hr className="border-slate-200 my-4" />
