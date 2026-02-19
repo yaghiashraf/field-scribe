@@ -19,6 +19,7 @@ interface SearchParams {
   canceled?: string;
   success?: string;
   payment_error?: string;
+  access_required?: string;
 }
 
 export default async function LandingPage({
@@ -29,6 +30,7 @@ export default async function LandingPage({
   const params = await searchParams;
   const wasCanceled = params.canceled === "true";
   const hasPaymentError = params.payment_error === "true";
+  const accessRequired = params.access_required === "true";
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
@@ -42,7 +44,16 @@ export default async function LandingPage({
       {/* Payment error banner */}
       {hasPaymentError && (
         <div className="bg-red-50 border-b border-red-200 py-3 px-4 text-center text-sm text-red-800">
-          Something went wrong with checkout. Please try again or contact support.
+          Something went wrong with checkout. Please try again or{" "}
+          <a href="mailto:support@fieldscribe.app" className="underline font-medium">contact support</a>.
+        </div>
+      )}
+
+      {/* Access required banner */}
+      {accessRequired && (
+        <div className="bg-indigo-50 border-b border-indigo-200 py-3 px-4 text-center text-sm text-indigo-800">
+          Dashboard access requires a purchase.{" "}
+          <Link href="/access" className="underline font-medium">Already purchased? Restore access →</Link>
         </div>
       )}
 
@@ -353,10 +364,10 @@ export default async function LandingPage({
               <p className="mt-6 text-center text-sm text-slate-400">
                 Already purchased?{" "}
                 <Link
-                  href="/dashboard"
+                  href="/access"
                   className="text-indigo-600 hover:text-indigo-700 font-medium inline-flex items-center gap-1"
                 >
-                  Go to Dashboard <ArrowRight className="w-3.5 h-3.5" />
+                  Restore access <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </p>
             </div>
@@ -488,14 +499,19 @@ export default async function LandingPage({
             <h4 className="text-white font-bold mb-4">Legal</h4>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <Link href="/privacy" className="hover:text-white transition-colors">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <Link href="/terms" className="hover:text-white transition-colors">
                   Terms of Service
-                </a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/access" className="hover:text-white transition-colors">
+                  Restore Access
+                </Link>
               </li>
             </ul>
           </div>

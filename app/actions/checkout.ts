@@ -22,7 +22,7 @@ export async function createCheckoutSession() {
     const session = await stripe.checkout.sessions.create({
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "payment",
-      success_url: `${origin}/dashboard?success=true`,
+      success_url: `${origin}/api/verify-access?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/?canceled=true`,
       automatic_tax: { enabled: true },
       allow_promotion_codes: true,
