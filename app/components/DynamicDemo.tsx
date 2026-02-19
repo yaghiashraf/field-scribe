@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { FileText, Image as ImageIcon, Mic } from "lucide-react";
+import Image from "next/image";
 
 export function DynamicDemo() {
   const [activeTab, setActiveTab] = useState<"input" | "output">("input");
@@ -41,11 +42,25 @@ export function DynamicDemo() {
             className="grid md:grid-cols-2 gap-8"
           >
             <div className="space-y-4">
+              {/* Real inspection photo — water damage under bathroom sink */}
               <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                <div className="bg-slate-200 aspect-video rounded-lg mb-3 flex items-center justify-center text-slate-400">
-                  <ImageIcon className="w-12 h-12" />
+                <div className="relative aspect-video rounded-lg overflow-hidden mb-3">
+                  <Image
+                    src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=640&h=360&fit=crop&crop=center"
+                    alt="Bathroom sink showing potential water damage and staining"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    unoptimized
+                  />
+                  {/* Overlay label */}
+                  <div className="absolute top-2 left-2 bg-black/50 text-white text-[10px] font-mono px-2 py-1 rounded backdrop-blur-sm">
+                    IMG_2024_0847.jpg
+                  </div>
                 </div>
-                <p className="text-xs text-slate-500 text-center">IMG_2024.jpg</p>
+                <p className="text-xs text-slate-500 text-center">
+                  Site photo — master bathroom
+                </p>
               </div>
               <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100 shadow-sm">
                 <div className="flex items-center gap-2 mb-2 text-indigo-700 font-semibold text-sm">
@@ -69,7 +84,7 @@ export function DynamicDemo() {
           >
             <h3 className="text-indigo-900 mt-0">Master Bathroom Inspection</h3>
             <hr className="border-slate-200 my-4" />
-            
+
             <h4 className="flex items-center gap-2 text-red-600">
               <AlertIcon /> 1. Moisture Intrusion (Plumbing)
             </h4>

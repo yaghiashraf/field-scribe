@@ -18,6 +18,7 @@ import { DynamicDemo } from "./components/DynamicDemo";
 interface SearchParams {
   canceled?: string;
   success?: string;
+  payment_error?: string;
 }
 
 export default async function LandingPage({
@@ -27,6 +28,7 @@ export default async function LandingPage({
 }) {
   const params = await searchParams;
   const wasCanceled = params.canceled === "true";
+  const hasPaymentError = params.payment_error === "true";
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
@@ -34,6 +36,13 @@ export default async function LandingPage({
       {wasCanceled && (
         <div className="bg-amber-50 border-b border-amber-200 py-3 px-4 text-center text-sm text-amber-800">
           Your checkout was canceled. No charge was made. Ready when you are!
+        </div>
+      )}
+
+      {/* Payment error banner */}
+      {hasPaymentError && (
+        <div className="bg-red-50 border-b border-red-200 py-3 px-4 text-center text-sm text-red-800">
+          Something went wrong with checkout. Please try again or contact support.
         </div>
       )}
 
@@ -112,9 +121,9 @@ export default async function LandingPage({
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
               <a
                 href="#pricing"
-                className="w-full sm:w-auto bg-indigo-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-indigo-700 transition-all hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto bg-indigo-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-indigo-700 transition-all hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2 whitespace-nowrap"
               >
-                <Zap className="w-5 h-5 text-yellow-300" />
+                <Zap className="w-5 h-5 text-yellow-300 shrink-0" />
                 Get Lifetime Access — $149
               </a>
               <div className="flex items-center gap-2 text-sm text-slate-500">

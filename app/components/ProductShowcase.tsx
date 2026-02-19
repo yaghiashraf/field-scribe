@@ -4,14 +4,23 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Camera, Mic, FileText, Check, AlertTriangle, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 
+// Inspection photo thumbnails for the drop-in step
+const PHOTO_CARDS = [
+  { emoji: "🏠", label: "Exterior", bg: "bg-orange-50", rotate: -14, dx: -72 },
+  { emoji: "🚿", label: "Bathroom", bg: "bg-sky-50",    rotate: 4,   dx: 0   },
+  { emoji: "⚡", label: "Electric", bg: "bg-slate-100", rotate: 12,  dx: 72  },
+];
+
+// Steps: 0=DropPhotos, 1=Scan, 2=Detect, 3=Record, 4=Generate, 5=Done
+const TOTAL_STEPS = 6;
+
 export function ProductShowcase() {
   const [step, setStep] = useState(0);
 
-  // Animation sequence: 0: Scan, 1: Detect, 2: Record, 3: Generate, 4: Done
   useEffect(() => {
     const timer = setInterval(() => {
-      setStep((prev) => (prev + 1) % 5);
-    }, 3000); // 3 seconds per step = 15s total loop
+      setStep((prev) => (prev + 1) % TOTAL_STEPS);
+    }, 3000);
     return () => clearInterval(timer);
   }, []);
 
@@ -29,7 +38,48 @@ export function ProductShowcase() {
       {/* Main Content Area */}
       <div className="pt-20 px-6 h-full flex flex-col">
         <AnimatePresence mode="wait">
+
+          {/* Step 0 — Photos drop in */}
           {step === 0 && (
+            <motion.div
+              key="drop-photos"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.3 }}
+              className="flex flex-col items-center justify-center h-full space-y-6"
+            >
+              {/* Polaroid cards */}
+              <div className="relative h-44 w-full flex items-center justify-center">
+                {PHOTO_CARDS.map((card, i) => (
+                  <motion.div
+                    key={card.label}
+                    initial={{ y: -180, x: card.dx, opacity: 0, rotate: card.rotate }}
+                    animate={{ y: 0,    x: card.dx, opacity: 1, rotate: card.rotate }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 240,
+                      damping: 22,
+                      delay: i * 0.13,
+                    }}
+                    className={`absolute ${card.bg} border border-slate-200 rounded-xl shadow-lg p-2 w-24`}
+                    style={{ zIndex: i }}
+                  >
+                    <div className="bg-slate-200/70 rounded-lg aspect-square flex items-center justify-center text-3xl mb-1.5">
+                      {card.emoji}
+                    </div>
+                    <p className="text-[10px] text-center font-medium text-slate-500 truncate">
+                      {card.label}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+              <p className="text-slate-500 font-medium">Uploading site photos…</p>
+            </motion.div>
+          )}
+
+          {/* Step 1 — Scan */}
+          {step === 1 && (
             <motion.div
               key="scan"
               initial={{ opacity: 0, y: 20 }}
@@ -48,11 +98,12 @@ export function ProductShowcase() {
                   className="absolute left-0 right-0 h-1 bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.5)] z-10"
                 />
               </div>
-              <p className="text-slate-500 font-medium">Scanning site photo...</p>
+              <p className="text-slate-500 font-medium">Scanning site photo…</p>
             </motion.div>
           )}
 
-          {step === 1 && (
+          {/* Step 2 — Detect */}
+          {step === 2 && (
             <motion.div
               key="detect"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -67,7 +118,7 @@ export function ProductShowcase() {
                     Defect Detected
                   </div>
                   <div className="absolute bottom-4 left-4 right-4 bg-white/90 p-2 rounded shadow-sm text-xs text-slate-700">
-                    &quot;Cracked stucco exterior wall, approx 3ft length.&quot;
+                    &quot;Cracked stucco exterior wall, approx 3 ft length.&quot;
                   </div>
                 </div>
               </div>
@@ -75,7 +126,8 @@ export function ProductShowcase() {
             </motion.div>
           )}
 
-          {step === 2 && (
+          {/* Step 3 — Record */}
+          {step === 3 && (
             <motion.div
               key="record"
               initial={{ opacity: 0 }}
@@ -98,13 +150,14 @@ export function ProductShowcase() {
                 </div>
               </div>
               <div className="space-y-2 text-center">
-                <p className="text-slate-900 font-medium">Recording Voice Note...</p>
-                <p className="text-slate-400 text-sm">&quot;North wall shows significant water damage...&quot;</p>
+                <p className="text-slate-900 font-medium">Recording Voice Note…</p>
+                <p className="text-slate-400 text-sm">&quot;North wall shows significant water damage…&quot;</p>
               </div>
             </motion.div>
           )}
 
-          {step === 3 && (
+          {/* Step 4 — Generate */}
+          {step === 4 && (
             <motion.div
               key="generate"
               initial={{ opacity: 0 }}
@@ -122,11 +175,12 @@ export function ProductShowcase() {
                   className="h-full bg-indigo-600"
                 />
               </div>
-              <p className="text-xs text-slate-400 mt-4">Merging photos & transcribing audio...</p>
+              <p className="text-xs text-slate-400 mt-4">Merging photos &amp; transcribing audio…</p>
             </motion.div>
           )}
 
-          {step === 4 && (
+          {/* Step 5 — Done */}
+          {step === 5 && (
             <motion.div
               key="done"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -156,12 +210,13 @@ export function ProductShowcase() {
               <p className="text-slate-900 font-bold">Done in seconds.</p>
             </motion.div>
           )}
+
         </AnimatePresence>
       </div>
 
       {/* Steps Indicator */}
       <div className="absolute bottom-6 left-0 right-0 flex justify-center space-x-2">
-        {[0, 1, 2, 3, 4].map((i) => (
+        {Array.from({ length: TOTAL_STEPS }, (_, i) => (
           <div
             key={i}
             className={`h-1.5 rounded-full transition-all duration-300 ${
