@@ -107,13 +107,14 @@ export default function TermsPage() {
             There are no recurring fees or subscriptions.
           </p>
           <p className="mt-3">
-            <strong>30-Day Money-Back Guarantee:</strong> If you are not satisfied for any reason,
-            email us at{" "}
+            <strong>All sales are final.</strong> Due to the nature of digital software and
+            the immediate access granted upon purchase, we do not offer refunds. Please review
+            all product information, the demo, and the FAQ carefully before purchasing. If you
+            have questions prior to buying, contact us at{" "}
             <a href="mailto:support@fieldscribe.app" className="text-indigo-600 hover:underline">
               support@fieldscribe.app
             </a>{" "}
-            within 30 days of your purchase and we will issue a full refund, no questions asked.
-            After 30 days, purchases are non-refundable.
+            and we will be happy to help.
           </p>
         </Section>
 

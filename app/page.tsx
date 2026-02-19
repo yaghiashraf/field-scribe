@@ -325,7 +325,7 @@ export default async function LandingPage({
                 <CheckItem text="PDF Export with Professional Branding" />
                 <CheckItem text="Auto-save Between Sessions" />
                 <CheckItem text="Priority Email Support" />
-                <CheckItem text="30-Day Money Back Guarantee" />
+                <CheckItem text="Instant Lifetime Access" />
               </ul>
 
               {/* Stripe checkout */}
@@ -347,15 +347,15 @@ export default async function LandingPage({
                 <div className="flex items-center gap-4 text-xs text-slate-400">
                   <span className="flex items-center gap-1">
                     <Check className="w-3 h-3 text-green-500" />
-                    30-day refund
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Check className="w-3 h-3 text-green-500" />
                     No subscription
                   </span>
                   <span className="flex items-center gap-1">
                     <Check className="w-3 h-3 text-green-500" />
                     Instant access
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Check className="w-3 h-3 text-green-500" />
+                    All sales final
                   </span>
                 </div>
               </div>
@@ -455,8 +455,8 @@ export default async function LandingPage({
               answer="Yes! FieldScribe is a Progressive Web App (PWA). Open in any mobile browser — voice recording and photo upload work natively on both iOS and Android."
             />
             <FAQItem
-              question="What if I need a refund?"
-              answer="We offer a 30-day no-questions-asked refund. Email us and we'll process it within 24 hours."
+              question="What is your refund policy?"
+              answer="All sales are final. Because you get immediate, permanent access to a digital product, we don't offer refunds. We encourage you to try the free demo, read the FAQ, and email us any questions before purchasing."
             />
           </div>
         </div>
