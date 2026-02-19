@@ -5,13 +5,32 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function createCheckoutSession(_formData?: FormData) {
-  const priceId = process.env.STRIPE_PRICE_ID;
+  // Use the provided Product ID if env var is missing, or use the env var
+  let priceId = process.env.STRIPE_PRICE_ID || "prod_U0ZahzawYulNNp";
 
-  // We cannot return data to the client if we are using this as a form action that might redirect.
-  // Instead, we will redirect to an error page or back to dashboard with a query param if something fails.
-  
   if (!priceId) {
     redirect("/dashboard?error=stripe_setup_missing");
+  }
+
+  // Handle Product IDs (prod_...) by fetching their default price
+  if (priceId.startsWith("prod_")) {
+    try {
+      const prices = await stripe.prices.list({
+        product: priceId,
+        active: true,
+        limit: 1,
+      });
+
+      if (prices.data.length > 0) {
+        priceId = prices.data[0].id;
+      } else {
+        console.error(`[FieldScribe] No active prices found for product ${priceId}`);
+        redirect(`/?payment_error=true&error=product_has_no_price`);
+      }
+    } catch (err) {
+      console.error("[FieldScribe] Error fetching price for product:", err);
+      redirect(`/?payment_error=true&error=invalid_product_config`);
+    }
   }
 
   const headersList = await headers();
@@ -44,7 +63,6 @@ export async function createCheckoutSession(_formData?: FormData) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("[FieldScribe] Stripe checkout error:", msg);
-    // In a server action, we can't easily alert, so we redirect to show the error
     redirect(`/?payment_error=true&error=${encodeURIComponent(msg)}`);
   }
 
