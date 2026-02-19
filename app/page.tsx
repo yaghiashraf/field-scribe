@@ -1,8 +1,21 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "FieldScribe — AI Inspection Report Software | $149 Lifetime",
+  description:
+    "Generate professional home and commercial inspection reports in seconds. Upload photos, record voice notes, and let AI write the report. No subscriptions. $149 one-time.",
+  alternates: { canonical: "https://field-scribe.vercel.app" },
+  openGraph: {
+    title: "FieldScribe — AI Inspection Report Software | $149 Lifetime",
+    description:
+      "Turn site photos and voice notes into professional, liability-proof inspection reports in seconds. Used by 500+ inspectors.",
+    url: "https://field-scribe.vercel.app",
+  },
+};
 import {
   Check,
-  Zap,
   Shield,
   FileText,
   Camera,
@@ -11,9 +24,9 @@ import {
   ChevronDown,
   ArrowRight,
 } from "lucide-react";
-import { createCheckoutSession } from "./actions/checkout";
 import { ProductShowcase } from "./components/ProductShowcase";
 import { DynamicDemo } from "./components/DynamicDemo";
+import { CheckoutButton } from "./components/CheckoutButton";
 
 interface SearchParams {
   canceled?: string;
@@ -130,13 +143,7 @@ export default async function LandingPage({
             </p>
 
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-              <a
-                href="#pricing"
-                className="w-full sm:w-auto bg-indigo-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-indigo-700 transition-all hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2 whitespace-nowrap"
-              >
-                <Zap className="w-5 h-5 text-yellow-300 shrink-0" />
-                Get Lifetime Access — $149
-              </a>
+              <CheckoutButton className="group w-full sm:w-auto bg-indigo-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-indigo-700 transition-all hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-75 disabled:cursor-wait" />
               <div className="flex items-center gap-2 text-sm text-slate-500">
                 <div className="flex -space-x-2">
                   {[
@@ -329,15 +336,7 @@ export default async function LandingPage({
               </ul>
 
               {/* Stripe checkout */}
-              <form action={createCheckoutSession}>
-                <button
-                  type="submit"
-                  className="w-full bg-slate-900 text-white py-5 rounded-xl font-bold text-lg hover:bg-slate-800 hover:shadow-xl transition-all flex items-center justify-center group"
-                >
-                  <Zap className="h-5 w-5 mr-3 text-yellow-400 group-hover:scale-110 transition-transform" />
-                  Get Lifetime Access — $149
-                </button>
-              </form>
+              <CheckoutButton className="group w-full bg-slate-900 text-white py-5 rounded-xl font-bold text-lg hover:bg-slate-800 hover:shadow-xl transition-all flex items-center justify-center gap-3 disabled:opacity-75 disabled:cursor-wait" />
 
               <div className="mt-6 flex flex-col items-center gap-2">
                 <div className="flex items-center gap-2 text-xs text-slate-500">
@@ -461,6 +460,67 @@ export default async function LandingPage({
           </div>
         </div>
       </section>
+
+      {/* FAQ JSON-LD structured data for Google rich results */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "Is FieldScribe really a one-time payment?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes. You pay $149 once and own FieldScribe forever. There are no recurring fees, no subscriptions, and no hidden charges.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What AI powers FieldScribe?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "FieldScribe uses Meta Llama 3.2 Vision for photo defect analysis, OpenAI Whisper for voice transcription, and Mistral 7B for professional report generation — all open-source models hosted on Hugging Face.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Does FieldScribe work on iPhone and Android?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes. FieldScribe is a Progressive Web App (PWA). Open it in any mobile browser — voice recording and photo upload work natively on both iOS and Android without installing anything.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Can I export reports to Spectora or HomeGauge?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes. Export your report as a branded PDF or plain text, then paste it into any inspection software including Spectora, HomeGauge, or ISN.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Is my inspection data secure?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Photos are processed by Hugging Face AI and are not stored long-term. Your report drafts are saved locally in your browser only — they never leave your device. Payments are handled by Stripe with industry-standard encryption.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What is the refund policy?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "All sales are final. Because you receive immediate, permanent access to a digital product, we do not offer refunds. We encourage you to review the demo, read the FAQ, and email support@fieldscribe.app with any questions before purchasing.",
+                },
+              },
+            ],
+          }),
+        }}
+      />
 
       {/* Footer */}
       <footer className="bg-slate-900 py-12 text-slate-400 text-sm border-t border-slate-800">

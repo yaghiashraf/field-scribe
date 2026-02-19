@@ -1,0 +1,21 @@
+{
+  "name": "FieldScribe — AI Inspection Reports",
+  "short_name": "FieldScribe",
+  "description": "Turn site photos and voice notes into professional inspection reports in seconds.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4F46E5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"],
+  "lang": "en-US",
+  "scope": "/"
+}

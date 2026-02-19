@@ -1,18 +1,32 @@
-import { MetadataRoute } from 'next';
+import { MetadataRoute } from "next";
+
+const BASE = "https://field-scribe.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: 'https://field-scribe.vercel.app',
+      url: BASE,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 1,
+      changeFrequency: "weekly",
+      priority: 1.0,
     },
     {
-      url: 'https://field-scribe.vercel.app/dashboard',
+      url: `${BASE}/access`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
+    {
+      url: `${BASE}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${BASE}/terms`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
     },
   ];
 }
