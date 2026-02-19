@@ -2,10 +2,10 @@
 
 import { HfInference } from "@huggingface/inference";
 
-// Vision models ordered by preference – both confirmed active on HF routing
+// Vision models confirmed working on HF router (Feb 2026)
 const VISION_MODELS = [
-  "meta-llama/Llama-3.2-11B-Vision-Instruct",
-  "Qwen/Qwen2.5-VL-7B-Instruct",
+  "Qwen/Qwen2.5-VL-7B-Instruct",   // Fast, confirmed working
+  "Qwen/Qwen2.5-VL-72B-Instruct",  // Higher quality fallback
 ];
 
 const INSPECTION_PROMPT = `You are a professional field inspector writing an inspection report. Analyze this site photo and provide a concise professional observation.
@@ -29,20 +29,11 @@ export async function analyzeImage(formData: FormData) {
   }
 
   const file = formData.get("file") as File;
-  if (!file) {
-    return { success: false, error: "No file provided." };
-  }
+  if (!file) return { success: false, error: "No file provided." };
+  if (!file.type.startsWith("image/")) return { success: false, error: "File must be an image." };
 
-  // Validate file type
-  if (!file.type.startsWith("image/")) {
-    return { success: false, error: "File must be an image." };
-  }
-
-  // Convert to base64 data URI
   const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  const mimeType = file.type || "image/jpeg";
-  const base64Image = `data:${mimeType};base64,${buffer.toString("base64")}`;
+  const base64Image = `data:${file.type || "image/jpeg"};base64,${Buffer.from(arrayBuffer).toString("base64")}`;
 
   const hf = new HfInference(token);
 
@@ -56,14 +47,8 @@ export async function analyzeImage(formData: FormData) {
           {
             role: "user",
             content: [
-              {
-                type: "image_url",
-                image_url: { url: base64Image },
-              },
-              {
-                type: "text",
-                text: INSPECTION_PROMPT,
-              },
+              { type: "image_url", image_url: { url: base64Image } },
+              { type: "text", text: INSPECTION_PROMPT },
             ],
           },
         ],
@@ -72,17 +57,14 @@ export async function analyzeImage(formData: FormData) {
       });
 
       const raw = response.choices?.[0]?.message?.content;
-      const description =
-        typeof raw === "string" ? raw.trim() : null;
+      const description = typeof raw === "string" ? raw.trim() : null;
 
       if (description && description.length > 15) {
         console.log(`[FieldScribe] ✓ Vision success → ${model}`);
         return { success: true, description };
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.warn(`[FieldScribe] Vision failed (${model}): ${msg}`);
-      // Try next model
+      console.warn(`[FieldScribe] Vision failed (${model}):`, err instanceof Error ? err.message : err);
     }
   }
 

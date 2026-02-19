@@ -2,10 +2,12 @@
 
 import { HfInference } from "@huggingface/inference";
 
-// Ordered by reliability & quality for structured report generation
+// Text models confirmed working on HF router (Feb 2026)
+// Mistral-7B-Instruct-v0.3 and Llama-3.2-8B are BROKEN (410 / "not a chat model")
 const REPORT_MODELS = [
-  "mistralai/Mistral-7B-Instruct-v0.3",
-  "meta-llama/Llama-3.2-8B-Instruct",
+  "meta-llama/Llama-3.1-8B-Instruct",     // Fast, high quality
+  "Qwen/Qwen2.5-72B-Instruct",            // Best quality fallback
+  "mistralai/Mistral-7B-Instruct-v0.2",   // Lightweight fallback
 ];
 
 export interface ReportParams {
@@ -21,11 +23,7 @@ export interface ReportParams {
   };
 }
 
-export async function generateReport({
-  notes,
-  imageDescriptions,
-  details,
-}: ReportParams) {
+export async function generateReport({ notes, imageDescriptions, details }: ReportParams) {
   const token = process.env.HF_ACCESS_TOKEN;
 
   if (!token || token === "hf_placeholder") {
@@ -37,9 +35,7 @@ export async function generateReport({
 
   const imageSection =
     imageDescriptions.length > 0
-      ? imageDescriptions
-          .map((d, i) => `  Photo ${i + 1}: ${d}`)
-          .join("\n")
+      ? imageDescriptions.map((d, i) => `  Photo ${i + 1}: ${d}`).join("\n")
       : "  No photos uploaded.";
 
   const notesSection = notes.trim() || "No voice notes recorded.";
@@ -114,14 +110,12 @@ For each finding observed in the data, use this structure:
         return { success: true, report: report.trim() };
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.warn(`[FieldScribe] Report generation failed (${model}): ${msg}`);
+      console.warn(`[FieldScribe] Report gen failed (${model}):`, err instanceof Error ? err.message : err);
     }
   }
 
   return {
     success: false,
-    error:
-      "Report generation failed. AI service is busy—please try again in a moment.",
+    error: "Report generation failed. AI service is busy — please try again in a moment.",
   };
 }

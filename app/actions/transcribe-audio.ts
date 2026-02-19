@@ -1,11 +1,10 @@
 "use server";
 
-import { HfInference } from "@huggingface/inference";
-
-// Only models confirmed active on hf-inference provider (as of 2025-2026)
+// Whisper via the new HF router endpoint (api-inference.huggingface.co returns 410)
+// Confirmed working: https://router.huggingface.co/hf-inference/models/{model}
 const ASR_MODELS = [
-  "openai/whisper-large-v3-turbo", // Fastest + near-identical accuracy to v3
-  "openai/whisper-large-v3",       // Highest accuracy fallback
+  "openai/whisper-large-v3-turbo",
+  "openai/whisper-large-v3",
 ];
 
 export async function transcribeAudio(formData: FormData) {
@@ -19,41 +18,47 @@ export async function transcribeAudio(formData: FormData) {
   }
 
   const file = formData.get("file") as File;
-  if (!file) {
-    return { success: false, error: "No audio file provided." };
-  }
+  if (!file) return { success: false, error: "No audio file provided." };
 
-  const arrayBuffer = await file.arrayBuffer();
-  // Pass as ArrayBuffer – HfInference accepts ArrayBuffer for ASR
-  const audioData = arrayBuffer;
-
-  const hf = new HfInference(token);
+  const audioBuffer = await file.arrayBuffer();
 
   for (const model of ASR_MODELS) {
     try {
       console.log(`[FieldScribe] Transcription → ${model}`);
 
-      const response = await hf.automaticSpeechRecognition({
-        model,
-        data: audioData,
-      });
+      // Use the new HF router endpoint — the legacy api-inference endpoint returns 410
+      const res = await fetch(
+        `https://router.huggingface.co/hf-inference/models/${model}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": file.type || "audio/webm",
+          },
+          body: audioBuffer,
+        }
+      );
 
-      const text = response?.text?.trim();
+      if (!res.ok) {
+        const errBody = await res.text();
+        console.warn(`[FieldScribe] ASR ${model} HTTP ${res.status}: ${errBody.slice(0, 120)}`);
+        continue;
+      }
+
+      const data = (await res.json()) as { text?: string };
+      const text = data.text?.trim();
 
       if (text && text.length > 0) {
         console.log(`[FieldScribe] ✓ Transcription success → ${model}`);
         return { success: true, text };
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.warn(`[FieldScribe] ASR failed (${model}): ${msg}`);
-      // Try next model
+      console.warn(`[FieldScribe] ASR failed (${model}):`, err instanceof Error ? err.message : err);
     }
   }
 
   return {
     success: false,
-    error:
-      "Transcription service busy. Please wait 30 seconds and try again, or type notes manually.",
+    error: "Transcription service busy. Please wait 30 seconds and try again, or type notes manually.",
   };
 }

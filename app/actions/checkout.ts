@@ -2,13 +2,16 @@
 
 import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 
-export async function createCheckoutSession() {
+type CheckoutResult =
+  | { url: string; error?: never }
+  | { error: string; url?: never };
+
+export async function createCheckoutSession(): Promise<CheckoutResult> {
   const priceId = process.env.STRIPE_PRICE_ID;
 
   if (!priceId) {
-    redirect("/dashboard?stripe_setup=true");
+    return { url: "/dashboard?stripe_setup=true" };
   }
 
   const headersList = await headers();
@@ -17,15 +20,12 @@ export async function createCheckoutSession() {
   const origin = (() => {
     const raw = headersList.get("origin");
     if (raw) return raw;
-
     const proto = headersList.get("x-forwarded-proto") ?? "https";
     const host = headersList.get("x-forwarded-host") ?? headersList.get("host");
     if (host) return `${proto}://${host}`;
-
     return "http://localhost:3000";
   })();
 
-  let sessionUrl: string | null = null;
   try {
     const session = await stripe.checkout.sessions.create({
       line_items: [{ price: priceId, quantity: 1 }],
@@ -36,10 +36,12 @@ export async function createCheckoutSession() {
       customer_creation: "always",
       billing_address_collection: "auto",
     });
-    sessionUrl = session.url;
-  } catch (err) {
-    console.error("[FieldScribe] Stripe checkout error:", err instanceof Error ? err.message : err);
-  }
 
-  redirect(sessionUrl ?? "/?payment_error=true");
+    if (!session.url) return { error: "Stripe did not return a checkout URL." };
+    return { url: session.url };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[FieldScribe] Stripe checkout error:", msg);
+    return { error: msg };
+  }
 }
