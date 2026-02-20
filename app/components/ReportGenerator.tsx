@@ -84,7 +84,7 @@ export function ReportGenerator({ notes, images, details }: Props) {
     const pageW = doc.internal.pageSize.getWidth();
     const pageH = doc.internal.pageSize.getHeight();
     const margin = 15;
-    const contentW = pageW - margin * 2 - 10; // Extra buffer to prevent cutoff
+    const contentW = pageW - margin * 2 - 20; // Increased buffer to 20mm
     let y = margin;
 
     const addFooter = (pageNum: number) => {

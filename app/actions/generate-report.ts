@@ -2,12 +2,10 @@
 
 import { HfInference } from "@huggingface/inference";
 
-// Text models confirmed working on HF router (Feb 2026)
-// Mistral-7B-Instruct-v0.3 and Llama-3.2-8B are BROKEN (410 / "not a chat model")
 const REPORT_MODELS = [
-  "meta-llama/Llama-3.1-8B-Instruct",     // Fast, high quality
-  "Qwen/Qwen2.5-72B-Instruct",            // Best quality fallback
-  "mistralai/Mistral-7B-Instruct-v0.2",   // Lightweight fallback
+  "meta-llama/Llama-3.1-8B-Instruct",
+  "Qwen/Qwen2.5-72B-Instruct",
+  "mistralai/Mistral-7B-Instruct-v0.2",
 ];
 
 export interface ReportParams {
@@ -40,9 +38,9 @@ export async function generateReport({ notes, imageDescriptions, details }: Repo
 
   const notesSection = notes.trim() || "No voice notes recorded.";
 
-  const systemPrompt = `You are a licensed home inspector writing official inspection reports. Write in professional, objective, third-person language. Use Markdown formatting. Do not include a title or footer.`;
+  const systemPrompt = `You are a licensed home inspector writing detailed, official inspection reports. Write in professional, objective, third-person language. Use Markdown formatting. Do not include a title or footer. IMPORTANT: Analyze ALL provided data and ensure Findings by System covers EVERY distinct area or component mentioned in the input data. Do not summarize briefly; be comprehensive.`;
 
-  const userPrompt = `Write a professional property inspection report using ONLY the information provided below. Do not invent findings not supported by the data.
+  const userPrompt = `Write a professional property inspection report using ONLY the information provided below. Do not invent findings not supported by the data, but expand thoroughly on the data provided.
 
 ## INSPECTION INFORMATION
 - **Inspector:** ${details.inspectorName || "Not provided"}
@@ -70,11 +68,12 @@ Generate the report with these exact sections:
 
 ## Findings by System
 
-For each finding observed in the data, use this structure:
-**[System/Area]**
-- **Observation:** What was seen
+For each finding observed in the data, use this structure. Group findings by major systems (e.g. Roofing, Plumbing, Electrical, Interior, etc.). Ensure EVERY defect mentioned in the notes or photos is included here.
+
+**[System/Area Name]**
+- **Observation:** Detailed description of what was seen.
 - **Condition:** Good / Fair / Poor / Critical
-- **Recommendation:** Specific action required (if any)
+- **Recommendation:** Specific action required (e.g. "Monitor", "Repair", "Replace", "Further Evaluation by Specialist").
 
 ## Priority Action Items
 (Bulleted list of the most urgent items requiring immediate attention)
@@ -94,7 +93,7 @@ For each finding observed in the data, use this structure:
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
         ],
-        max_tokens: 2000,
+        max_tokens: 3000, // Increased token limit for more detailed reports
         temperature: 0.2,
       });
 
