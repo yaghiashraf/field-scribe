@@ -1,8 +1,11 @@
 # Icons
 
-This folder contains the application icons in SVG format.
+This folder contains the application icons in SVG and PNG format.
 
-- `icon-128.svg`: 128x128px small logo
-- `logo-512.svg`: 512x512px large logo
+- `icon-128.svg`: 128x128px small logo (Vector)
+- `icon-128.png`: 128x128px small logo (Raster)
+- `logo-512.svg`: 512x512px large logo (Vector)
+- `logo-512.png`: 512x512px large logo (Raster)
 
-These SVGs can be used directly in many contexts or converted to PNG/JPG using online tools (e.g. svgtopng.com) or design software.
+The SVG files are the source of truth and can be scaled to any size.
+The PNG files are generated from the SVGs for platform requirements.
