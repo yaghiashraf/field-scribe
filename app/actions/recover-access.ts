@@ -18,7 +18,7 @@ export async function recoverAccess(email: string) {
       // This is an expensive operation in Stripe API (listing sessions), so usually we rely on Customers.
       // For a payment link, Stripe usually creates a Guest Customer.
       // We will search for successful checkout sessions for this email.
-      const sessions = await stripe.checkout.sessions.list({
+      await stripe.checkout.sessions.list({
         limit: 1,
         status: 'complete',
         // 'customer_details.email' is not directly filterable in list(), 

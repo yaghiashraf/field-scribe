@@ -1,4 +1,4 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { ABTestCTA } from '@/app/components/ABTestCTA';
 
 describe('ABTestCTA Component', () => {

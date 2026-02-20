@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Check, Zap, Shield, FileText, Camera, Mic, Layout, Star, ChevronDown, ArrowRight, Clock, DollarSign, X } from "lucide-react";
-import { createCheckoutSession } from "./actions/checkout";
+import { Check, Shield, FileText, Camera, Mic, Star, ChevronDown, ArrowRight, Clock, DollarSign } from "lucide-react";
 import { ProductShowcase } from "./components/ProductShowcase";
 import { DynamicDemo } from "./components/DynamicDemo";
 import { CheckoutButton } from "./components/CheckoutButton";
@@ -190,7 +189,7 @@ export default async function LandingPage({
                 <tr className="bg-slate-50 border-b border-slate-200">
                   <th className="p-6 text-sm font-semibold text-slate-500 uppercase tracking-wider w-1/3">Feature</th>
                   <th className="p-6 text-sm font-bold text-indigo-600 uppercase tracking-wider w-1/3 bg-indigo-50/50">FieldScribe</th>
-                  <th className="p-6 text-sm font-semibold text-slate-500 uppercase tracking-wider w-1/3">The "Big Guys"</th>
+                  <th className="p-6 text-sm font-semibold text-slate-500 uppercase tracking-wider w-1/3">The &quot;Big Guys&quot;</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -230,7 +229,7 @@ export default async function LandingPage({
             </div>
             <h2 className="text-4xl font-bold mb-6">The math is simple.</h2>
             <p className="text-slate-400 text-lg mb-8 leading-relaxed">
-              Most inspection software charges you $79/month forever. That's $9,480 over a 10-year career. 
+              Most inspection software charges you $79/month forever. That&apos;s $9,480 over a 10-year career. 
               <br /><br />
               FieldScribe costs $149 once. 
               <br />
