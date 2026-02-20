@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Check, Shield, FileText, Camera, Mic, Star, ChevronDown, ArrowRight, Clock, DollarSign } from "lucide-react";
+import { Check, Shield, FileText, Camera, Mic, Star, ChevronDown, ArrowRight, Clock, DollarSign, Lock, Cloud, Cpu, CreditCard } from "lucide-react";
 import { ProductShowcase } from "./components/ProductShowcase";
 import { DynamicDemo } from "./components/DynamicDemo";
 import { CheckoutButton } from "./components/CheckoutButton";
@@ -150,32 +150,34 @@ export default async function LandingPage({
         </div>
       </section>
 
-      {/* Social proof */}
+      {/* Powered By (Replaces fake social proof) */}
       <section className="py-10 border-y border-slate-100 bg-slate-50/50">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-6">
-            Trusted by professionals from
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">
+            Powered by world-class infrastructure
           </p>
-          <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-50 hover:opacity-80 transition-opacity">
-            {[
-              { icon: Shield, label: "SafeHome" },
-              { icon: Check, label: "BuildRight" },
-              { icon: FileText, label: "InspectPro" },
-              { icon: Star, label: "EliteCheck" },
-            ].map(({ icon: Icon, label }) => (
-              <span
-                key={label}
-                className="text-xl font-bold text-slate-800 flex items-center gap-2"
-              >
-                <Icon className="w-6 h-6" />
-                {label}
-              </span>
-            ))}
+          <div className="flex flex-wrap justify-center gap-8 md:gap-16">
+            <div className="flex items-center gap-2 text-slate-600 font-semibold opacity-75">
+              <CreditCard className="w-5 h-5 text-indigo-600" />
+              <span>Stripe Secure Payments</span>
+            </div>
+            <div className="flex items-center gap-2 text-slate-600 font-semibold opacity-75">
+              <Cloud className="w-5 h-5 text-black" />
+              <span>Vercel Edge Network</span>
+            </div>
+            <div className="flex items-center gap-2 text-slate-600 font-semibold opacity-75">
+              <Cpu className="w-5 h-5 text-blue-500" />
+              <span>Meta Llama 3.2 AI</span>
+            </div>
+            <div className="flex items-center gap-2 text-slate-600 font-semibold opacity-75">
+              <Lock className="w-5 h-5 text-green-600" />
+              <span>AES-256 Encryption</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Comparison Table (New Section) */}
+      {/* Comparison Table */}
       <section id="comparison" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -219,7 +221,7 @@ export default async function LandingPage({
         </div>
       </section>
 
-      {/* ROI Section (New Section) */}
+      {/* ROI Section */}
       <section className="py-24 bg-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-16 items-center">
           <div>
