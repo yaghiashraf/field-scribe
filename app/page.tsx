@@ -107,14 +107,14 @@ export default async function LandingPage({
               Now with AI Vision 2.0
             </div>
 
-            <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] mb-8 text-slate-900">
+            <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] mb-8 text-slate-900 text-balance">
               Stop typing reports at{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">
                 midnight.
               </span>
             </h1>
 
-            <p className="text-xl text-slate-500 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-xl text-slate-500 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed text-balance">
               Turn site photos and messy voice notes into professional,
               liability-proof inspection reports in seconds — with one simple
               lifetime payment.
@@ -182,8 +182,8 @@ export default async function LandingPage({
       <section id="comparison" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Why inspectors are switching</h2>
-            <p className="text-lg text-slate-500">Stop renting your tools. Start owning your business.</p>
+            <h2 className="text-3xl font-bold text-slate-900 mb-4 text-balance">Why inspectors are switching</h2>
+            <p className="text-lg text-slate-500 text-balance">Stop renting your tools. Start owning your business.</p>
           </div>
           
           <div className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm">
@@ -230,8 +230,8 @@ export default async function LandingPage({
               <DollarSign className="w-3 h-3 mr-1" />
               Maximize Profit
             </div>
-            <h2 className="text-4xl font-bold mb-6">The math is simple.</h2>
-            <p className="text-slate-400 text-lg mb-8 leading-relaxed">
+            <h2 className="text-4xl font-bold mb-6 text-balance">The math is simple.</h2>
+            <p className="text-slate-400 text-lg mb-8 leading-relaxed text-balance">
               Most inspection software charges you $79/month forever. That&apos;s $9,480 over a 10-year career. 
               <br /><br />
               FieldScribe costs $149 once. 
@@ -286,7 +286,7 @@ export default async function LandingPage({
             <h3 className="text-4xl font-extrabold text-slate-900 mb-6">
               Built for speed. Optimized for protection.
             </h3>
-            <p className="text-xl text-slate-500">
+            <p className="text-xl text-slate-500 text-balance max-w-2xl mx-auto">
               We stripped away the bloat. No complex menus, no &quot;CRM&quot;
               features you don&apos;t use. Just scan, speak, and send.
             </p>
@@ -318,10 +318,10 @@ export default async function LandingPage({
       {/* Demo */}
       <section id="demo" className="py-24 bg-slate-50 text-slate-900 overflow-hidden border-y border-slate-200">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-balance">
             See the magic in action.
           </h2>
-          <p className="text-slate-500 max-w-2xl mx-auto mb-12 text-lg">
+          <p className="text-slate-500 max-w-2xl mx-auto mb-12 text-lg text-balance">
             Don&apos;t take our word for it. Switch tabs below to see how raw,
             messy field data becomes a polished client-ready report.
           </p>
@@ -332,10 +332,10 @@ export default async function LandingPage({
       {/* Pricing */}
       <section id="pricing" className="py-24 bg-white">
         <div className="max-w-3xl mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold text-slate-900 mb-6">
+          <h2 className="text-4xl font-bold text-slate-900 mb-6 text-balance">
             One Payment. Lifetime Access.
           </h2>
-          <p className="text-xl text-slate-600 mb-12">
+          <p className="text-xl text-slate-600 mb-12 text-balance">
             The only inspection software that pays for itself in 2 jobs.
           </p>
 
@@ -409,7 +409,7 @@ export default async function LandingPage({
       {/* Testimonials */}
       <section className="py-20 bg-slate-50 border-t border-slate-100">
         <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center">
+          <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center text-balance">
             What inspectors say
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
