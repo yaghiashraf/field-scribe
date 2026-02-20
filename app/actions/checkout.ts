@@ -3,14 +3,9 @@
 import { redirect } from "next/navigation";
 
 export async function createCheckoutSession() {
-  // Simple redirection to the Stripe Payment Link
-  // The user must generate this link in their Stripe Dashboard: https://dashboard.stripe.com/payment-links
-  const paymentLink = process.env.STRIPE_PAYMENT_LINK;
-
-  if (!paymentLink) {
-    console.error("STRIPE_PAYMENT_LINK is missing");
-    redirect("/dashboard?error=stripe_setup_missing");
-  }
+  // Direct redirection to the provided Stripe Payment Link
+  // This avoids API complexity and uses the hosted payment page directly.
+  const paymentLink = process.env.STRIPE_PAYMENT_LINK || "https://buy.stripe.com/eVq4gydez4h9biebhPg3602";
 
   redirect(paymentLink);
 }
