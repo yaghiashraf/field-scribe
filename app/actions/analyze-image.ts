@@ -11,7 +11,7 @@ const VISION_MODELS = [
 const INSPECTION_PROMPT = `You are a professional field inspector writing an inspection report. Analyze this site photo and provide a concise professional observation.
 
 Identify and describe:
-• Primary subject and location within the structure
+• Item of Interest / Component (e.g. "Roofing System", "Exterior Wall", "Kitchen Sink")
 • Any visible defects, damage, or deterioration (cracks, corrosion, water staining, mold, missing components, excessive wear)
 • Materials and construction elements visible
 • Overall condition rating: Good / Fair / Poor / Critical

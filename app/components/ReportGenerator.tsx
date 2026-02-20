@@ -118,20 +118,31 @@ export function ReportGenerator({ notes, images, details }: Props) {
     
     y = 40;
 
-    // Property Photo (Use first uploaded image if available)
+    // Property Photo (Smart Selection)
     if (images.length > 0) {
         try {
-            // Get the first image
-            const coverImg = images[0];
+            // Heuristic: Prefer "exterior", "house", "front", "building"
+            let coverImgIndex = 0;
+            const keywords = ["exterior", "house", "front", "building", "elevation", "street", "facade"];
+            
+            for (let i = 0; i < images.length; i++) {
+                const desc = images[i].analysis.toLowerCase();
+                if (keywords.some(k => desc.includes(k))) {
+                    coverImgIndex = i;
+                    break;
+                }
+            }
+
+            const coverImg = images[coverImgIndex];
             const imgProps = doc.getImageProperties(coverImg.preview);
             const imgH = (imgProps.height * contentW) / imgProps.width;
             
             // Limit cover image height
-            const maxH = 100; 
+            const maxH = 110; 
             const finalH = imgH > maxH ? maxH : imgH;
             
             doc.addImage(coverImg.preview, "JPEG", margin, y, contentW, finalH);
-            y += finalH + 10;
+            y += finalH + 15;
         } catch (err) {
             console.warn("Could not add cover image", err);
         }
@@ -161,7 +172,9 @@ export function ReportGenerator({ notes, images, details }: Props) {
 
     // Inspector Badge
     doc.setDrawColor(200);
-    doc.roundedRect(margin, y, contentW, 35, 2, 2);
+    doc.setFillColor(250, 250, 250);
+    doc.roundedRect(margin, y, contentW, 35, 2, 2, "FD");
+    doc.setTextColor(30);
     doc.setFont("helvetica", "bold");
     doc.text("INSPECTOR", margin + 5, y + 8);
     doc.setFont("helvetica", "normal");
@@ -169,7 +182,6 @@ export function ReportGenerator({ notes, images, details }: Props) {
     doc.text(details.companyName || "", margin + 5, y + 22);
     doc.text(details.companyAddress || "", margin + 5, y + 28);
     
-    // Add footer to cover page and start new page
     addFooter(pageCount);
     doc.addPage();
     pageCount++;
@@ -183,53 +195,77 @@ export function ReportGenerator({ notes, images, details }: Props) {
       const line = rawLine.trimEnd();
 
       if (line.startsWith("# ")) {
-        // Main Header (ignore if duplicates cover info, otherwise print)
-        continue; // We already have a cover page
+        continue; // Skip main title as cover page handles it
       }
 
+      // H2 Section Header (e.g. "Findings by System", "Executive Summary")
       if (line.startsWith("## ")) {
-        // Section Header
-        checkSpace(15);
-        y += 5;
-        doc.setFillColor(240, 242, 245); // Light gray bg
+        checkSpace(20);
+        y += 8;
+        // Section Block
+        doc.setFillColor(240, 242, 245); 
         doc.rect(margin, y, contentW, 10, "F");
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(55, 65, 81);
         doc.text(line.replace(/^## /, "").toUpperCase(), margin + 2, y + 7);
-        y += 15;
+        y += 16;
         continue;
       }
 
+      // H3 Subsection (e.g. "Roofing System", "Kitchen")
+      if (line.startsWith("### ")) {
+        checkSpace(15);
+        y += 5;
+        // Divider line above
+        doc.setDrawColor(200);
+        doc.setLineWidth(0.1);
+        doc.line(margin, y, margin + contentW, y);
+        y += 6;
+        
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(30);
+        doc.text(line.replace(/^### /, ""), margin, y);
+        y += 7;
+        continue;
+      }
+
+      // Bold Key-Value pairs (e.g. **Observation:** ...)
       if (line.startsWith("**") || line.includes("**")) {
-        // Bold Key-Value pairs (e.g. **Observation:** ...)
         checkSpace(6);
         doc.setFontSize(10);
         doc.setTextColor(30);
         
-        // Simple bold parsing: split by **
         const parts = line.split("**");
         let currentX = margin;
         
+        // Handle list bullet indent if implied
+        if (line.trim().startsWith("- ") || line.trim().startsWith("• ")) {
+            currentX += 5;
+        }
+
         parts.forEach((part, i) => {
             if (part === "") return;
-            doc.setFont("helvetica", i % 2 === 1 ? "bold" : "normal"); // Odd parts are bold
-            doc.text(part, currentX, y);
-            currentX += doc.getStringUnitWidth(part) * 3.52; // Approx width scaling
+            // Clean markers
+            const cleanPart = part.replace(/^[-•] /, ""); 
+            
+            doc.setFont("helvetica", i % 2 === 1 ? "bold" : "normal"); // Odd index inside ** is bold
+            doc.text(cleanPart, currentX, y);
+            currentX += doc.getStringUnitWidth(cleanPart) * 3.52; 
         });
         y += 6;
         continue;
       }
 
+      // Standard Bullet points without bolding (fallback)
       if (line.startsWith("- ") || line.startsWith("• ")) {
-        // Bullet points
         checkSpace(6);
         doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(50);
         const text = line.replace(/^[-•] /, "");
         
-        // Handle long bullets
         const splitText = doc.splitTextToSize(text, contentW - 5);
         doc.text("•", margin, y);
         doc.text(splitText, margin + 5, y);
@@ -250,20 +286,23 @@ export function ReportGenerator({ notes, images, details }: Props) {
     }
 
     // ── PHOTO ADDENDUM ──
-    // Add photos at the end
     if (images.length > 0) {
         doc.addPage();
         pageCount++;
         y = margin;
         
+        // Header
+        doc.setFillColor(240, 242, 245);
+        doc.rect(margin, y, contentW, 10, "F");
+        doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(14);
-        doc.text("PHOTO ADDENDUM", margin, y);
-        y += 10;
+        doc.setTextColor(55, 65, 81);
+        doc.text("PHOTO ADDENDUM", margin + 2, y + 7);
+        y += 18;
 
         for (let i = 0; i < images.length; i++) {
             const img = images[i];
-            // 2 photos per page max
+            // 2 photos per page max (approx 110mm height each block)
             checkSpace(110); 
             
             try {
@@ -276,14 +315,22 @@ export function ReportGenerator({ notes, images, details }: Props) {
                 // Keep ratio but fit on page
                 doc.addImage(img.preview, "JPEG", margin, y, imgW, imgH);
                 
-                // Add Caption
+                // Add Label
+                doc.setFontSize(9);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(30);
+                doc.text(`Photo ${i+1}: Item of Interest`, margin + imgW + 5, y + 5);
+                
+                // Add Description
                 doc.setFontSize(9);
                 doc.setFont("helvetica", "normal");
-                doc.setTextColor(100);
-                const caption = `Photo ${i+1}: ${img.analysis || "Site Photo"}`;
-                const splitCaption = doc.splitTextToSize(caption, contentW - imgW - 10);
+                doc.setTextColor(80);
                 
-                doc.text(splitCaption, margin + imgW + 5, y + 10);
+                // Clean description if it repeats "Description:"
+                const cleanDesc = img.analysis.replace(/^Description:\s*/i, "");
+                const splitCaption = doc.splitTextToSize(cleanDesc, contentW - imgW - 10);
+                
+                doc.text(splitCaption, margin + imgW + 5, y + 12);
                 
                 y += imgH + 15;
             } catch (err) {
@@ -294,7 +341,7 @@ export function ReportGenerator({ notes, images, details }: Props) {
     }
 
     const slug = (details.propertyAddress || "report").replace(/[^a-z0-9]/gi, "-");
-    doc.save(`FieldScribe-${slug}.pdf`);
+    doc.save(`FieldScribe-Report-${slug}.pdf`);
   };
 
   return (
@@ -307,7 +354,7 @@ export function ReportGenerator({ notes, images, details }: Props) {
         <button
           onClick={handleGenerate}
           disabled={isGenerating || (!hasData && !hasDetails)}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm transition-all hover:shadow-md"
         >
           {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
           {isGenerating ? "Generating..." : report ? "Regenerate" : "Generate Report"}
@@ -315,43 +362,63 @@ export function ReportGenerator({ notes, images, details }: Props) {
       </div>
 
       {errorMsg && (
-        <div className="p-3 bg-red-50 text-red-700 text-sm rounded-lg flex gap-2">
-          <AlertCircle className="w-4 h-4 mt-0.5" /> {errorMsg}
+        <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-100 rounded-lg text-sm text-red-700">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>{errorMsg}</span>
         </div>
       )}
 
       {/* Preview */}
       {report ? (
         <div className="border border-slate-200 rounded-xl bg-white shadow-sm overflow-hidden">
+          {/* Toolbar */}
           <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100 bg-slate-50">
-            <span className="text-xs font-medium text-slate-500 uppercase">Preview</span>
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+              Preview
+            </span>
             <div className="flex gap-2">
-              <button onClick={handleCopy} className="text-xs flex gap-1 items-center px-2 py-1 text-slate-600 hover:bg-slate-200 rounded">
-                {copied ? <CheckCheck className="w-3 h-3" /> : <Copy className="w-3 h-3" />} Copy
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 px-2 py-1 rounded hover:bg-slate-100 transition-colors"
+              >
+                {copied ? (
+                  <CheckCheck className="w-3.5 h-3.5 text-green-500" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5" />
+                )}
+                {copied ? "Copied!" : "Copy"}
               </button>
-              <button onClick={handleDownloadText} className="text-xs flex gap-1 items-center px-2 py-1 text-slate-600 hover:bg-slate-200 rounded">
-                <FileType className="w-3 h-3" /> TXT
+              <button
+                onClick={handleDownloadText}
+                className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 px-2 py-1 rounded hover:bg-slate-100 transition-colors"
+              >
+                <FileType className="w-3.5 h-3.5" />
+                TXT
               </button>
-              <button onClick={handleDownloadPDF} className="text-xs flex gap-1 items-center px-3 py-1 bg-slate-900 text-white hover:bg-slate-700 rounded">
-                <Download className="w-3 h-3" /> Download PDF
+              <button
+                onClick={handleDownloadPDF}
+                className="flex items-center gap-1.5 text-xs bg-slate-900 text-white px-3 py-1 rounded hover:bg-slate-700 transition-colors"
+              >
+                <Download className="w-3.5 h-3.5" />
+                PDF
               </button>
             </div>
           </div>
-          <div className="p-6 max-h-[600px] overflow-y-auto">
-            <div className="prose prose-sm max-w-none text-slate-800">
-                {/* Quick markdown rendering for preview */}
-                {report.split('\n').map((line, i) => (
-                    <p key={i} className={line.startsWith('#') ? "font-bold text-slate-900 mt-4 border-b border-slate-100 pb-1" : "mb-2"}>
-                        {line.replace(/[#*]/g, '')}
-                    </p>
-                ))}
-            </div>
+
+          {/* Content */}
+          <div className="p-4 max-h-[600px] overflow-y-auto">
+            <pre className="whitespace-pre-wrap font-mono text-xs text-slate-700 leading-relaxed">
+              {report}
+            </pre>
           </div>
         </div>
       ) : (
         <div className="border-2 border-dashed border-slate-100 rounded-xl p-12 text-center text-slate-400 bg-slate-50/50">
           <FileText className="h-10 w-10 mx-auto mb-3 opacity-20" />
-          <p className="text-sm">Ready to generate.</p>
+          <p className="text-sm">
+            Fill in details, upload photos, and add voice notes, then click{" "}
+            <strong className="text-slate-500">Generate Report</strong>.
+          </p>
         </div>
       )}
     </div>
