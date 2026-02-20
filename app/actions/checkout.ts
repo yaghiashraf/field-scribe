@@ -6,17 +6,16 @@ import { redirect } from "next/navigation";
 
 export async function createCheckoutSession(_formData?: FormData) {
   let priceId = process.env.STRIPE_PRICE_ID || "prod_U0ZahzawYulNNp";
+  let errorMessage: string | null = null;
 
-  // If no price ID at all, fail early
+  // 1. Validation
   if (!priceId) {
-    console.error("[FieldScribe] No Stripe Price ID configured");
-    redirect("/dashboard?error=stripe_setup_missing");
+    return redirect("/dashboard?error=stripe_setup_missing");
   }
 
-  // Handle Product IDs (prod_...) by fetching their default price
+  // 2. Resolve Product ID to Price ID
   if (priceId.startsWith("prod_")) {
     try {
-      // 1. First try to get the default_price directly from the product
       const product = await stripe.products.retrieve(priceId);
       
       if (typeof product.default_price === 'string') {
@@ -24,8 +23,6 @@ export async function createCheckoutSession(_formData?: FormData) {
       } else if (product.default_price && typeof product.default_price === 'object') {
         priceId = product.default_price.id;
       } else {
-        // 2. If no default_price, list active prices for this product
-        console.log(`[FieldScribe] Product ${priceId} has no default_price, searching prices...`);
         const prices = await stripe.prices.list({
           product: priceId,
           active: true,
@@ -35,18 +32,20 @@ export async function createCheckoutSession(_formData?: FormData) {
         if (prices.data.length > 0) {
           priceId = prices.data[0].id;
         } else {
-          console.error(`[FieldScribe] No active prices found for product ${priceId}`);
-          redirect(`/?payment_error=true&error=product_has_no_price`);
+          errorMessage = `No active price found for product ${priceId}`;
         }
       }
     } catch (err) {
-      console.error("[FieldScribe] Error fetching price for product:", err);
-      // Don't redirect yet, let it try to fail naturally or return error
-      // Actually we must redirect or throw in a server action if we can't proceed
-      redirect(`/?payment_error=true&error=invalid_product_config`);
+      console.error("[FieldScribe] Product lookup failed:", err);
+      errorMessage = `Invalid Product ID: ${priceId}. Ensure your API Key matches the environment (Test/Live) where this product exists.`;
     }
   }
 
+  if (errorMessage) {
+    return redirect(`/?payment_error=true&error=${encodeURIComponent(errorMessage)}`);
+  }
+
+  // 3. Create Checkout Session
   const headersList = await headers();
   const origin = (() => {
     const raw = headersList.get("origin");
@@ -57,7 +56,7 @@ export async function createCheckoutSession(_formData?: FormData) {
     return "http://localhost:3000";
   })();
 
-  let sessionUrl: string | undefined;
+  let sessionUrl: string | null = null;
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -66,24 +65,19 @@ export async function createCheckoutSession(_formData?: FormData) {
       success_url: `${origin}/dashboard?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/?canceled=true`,
       allow_promotion_codes: true,
-      // 'customer_creation: always' is implicit for payment mode
       billing_address_collection: "auto",
     });
-
-    if (session.url) {
-      sessionUrl = session.url;
-    }
+    sessionUrl = session.url;
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error("[FieldScribe] Stripe checkout error:", msg);
-    // Redirect to home with error parameter
-    redirect(`/?payment_error=true&error=${encodeURIComponent(msg)}`);
+    console.error("[FieldScribe] Checkout session creation failed:", msg);
+    errorMessage = msg;
   }
 
+  // 4. Redirect (Must happen outside try/catch)
   if (sessionUrl) {
     redirect(sessionUrl);
   } else {
-    console.error("[FieldScribe] No session URL returned from Stripe");
-    redirect("/?payment_error=true&reason=no_url");
+    redirect(`/?payment_error=true&error=${encodeURIComponent(errorMessage || "Unknown error")}`);
   }
 }
