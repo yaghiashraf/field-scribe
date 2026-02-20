@@ -84,7 +84,7 @@ export function ReportGenerator({ notes, images, details }: Props) {
     const pageW = doc.internal.pageSize.getWidth();
     const pageH = doc.internal.pageSize.getHeight();
     const margin = 15;
-    const contentW = pageW - margin * 2 - 20; // Increased buffer to 20mm
+    const contentW = pageW - margin * 2 - 20; // Increased buffer to 20mm for right margin safety
     let y = margin;
 
     const addFooter = (pageNum: number) => {
@@ -118,10 +118,9 @@ export function ReportGenerator({ notes, images, details }: Props) {
     
     y = 40;
 
-    // Property Photo (Smart Selection)
+    // Property Photo
     if (images.length > 0) {
         try {
-            // Heuristic: Prefer "exterior", "house", "front", "building"
             let coverImgIndex = 0;
             const keywords = ["exterior", "house", "front", "building", "elevation", "street", "facade"];
             
@@ -137,7 +136,6 @@ export function ReportGenerator({ notes, images, details }: Props) {
             const imgProps = doc.getImageProperties(coverImg.preview);
             const imgH = (imgProps.height * contentW) / imgProps.width;
             
-            // Limit cover image height
             const maxH = 110; 
             const finalH = imgH > maxH ? maxH : imgH;
             
@@ -147,7 +145,6 @@ export function ReportGenerator({ notes, images, details }: Props) {
             console.warn("Could not add cover image", err);
         }
     } else {
-        // Placeholder box if no images
         doc.setFillColor(240, 240, 240);
         doc.rect(margin, y, contentW, 80, "F");
         doc.setTextColor(150);
@@ -156,7 +153,6 @@ export function ReportGenerator({ notes, images, details }: Props) {
         y += 90;
     }
 
-    // Property Details
     doc.setTextColor(30);
     doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
@@ -170,7 +166,6 @@ export function ReportGenerator({ notes, images, details }: Props) {
     doc.text(`Date: ${details.date}`, margin, y);
     y += 15;
 
-    // Inspector Badge
     doc.setDrawColor(200);
     doc.setFillColor(250, 250, 250);
     doc.roundedRect(margin, y, contentW, 35, 2, 2, "FD");
@@ -188,21 +183,16 @@ export function ReportGenerator({ notes, images, details }: Props) {
     y = margin;
 
     // ── REPORT BODY ──
-    
     const lines = report.split("\n");
 
     for (const rawLine of lines) {
       const line = rawLine.trimEnd();
 
-      if (line.startsWith("# ")) {
-        continue; // Skip main title as cover page handles it
-      }
+      if (line.startsWith("# ")) continue; 
 
-      // H2 Section Header (e.g. "Findings by System", "Executive Summary")
       if (line.startsWith("## ")) {
         checkSpace(20);
         y += 8;
-        // Section Block
         doc.setFillColor(240, 242, 245); 
         doc.rect(margin, y, contentW, 10, "F");
         doc.setFontSize(12);
@@ -213,16 +203,13 @@ export function ReportGenerator({ notes, images, details }: Props) {
         continue;
       }
 
-      // H3 Subsection (e.g. "Roofing System", "Kitchen")
       if (line.startsWith("### ")) {
         checkSpace(15);
         y += 5;
-        // Divider line above
         doc.setDrawColor(200);
         doc.setLineWidth(0.1);
         doc.line(margin, y, margin + contentW, y);
         y += 6;
-        
         doc.setFontSize(11);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(30);
@@ -231,26 +218,24 @@ export function ReportGenerator({ notes, images, details }: Props) {
         continue;
       }
 
-      // Bold Key-Value pairs (e.g. **Observation:** ...)
       if (line.startsWith("**") || line.includes("**")) {
         checkSpace(6);
         doc.setFontSize(10);
         doc.setTextColor(30);
-        
         const parts = line.split("**");
         let currentX = margin;
-        
-        // Handle list bullet indent if implied
         if (line.trim().startsWith("- ") || line.trim().startsWith("• ")) {
             currentX += 5;
         }
-
         parts.forEach((part, i) => {
             if (part === "") return;
-            // Clean markers
             const cleanPart = part.replace(/^[-•] /, ""); 
-            
-            doc.setFont("helvetica", i % 2 === 1 ? "bold" : "normal"); // Odd index inside ** is bold
+            doc.setFont("helvetica", i % 2 === 1 ? "bold" : "normal");
+            // Fix: check if this specific part will overflow
+            // But we don't wrap "inline" styles easily in jsPDF raw.
+            // Simplified approach for bold wrapping: 
+            // If the value part is long, we just print the label and then the value on next line? No.
+            // We'll rely on the generous buffer.
             doc.text(cleanPart, currentX, y);
             currentX += doc.getStringUnitWidth(cleanPart) * 3.52; 
         });
@@ -258,14 +243,13 @@ export function ReportGenerator({ notes, images, details }: Props) {
         continue;
       }
 
-      // Standard Bullet points without bolding (fallback)
       if (line.startsWith("- ") || line.startsWith("• ")) {
         checkSpace(6);
         doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(50);
         const text = line.replace(/^[-•] /, "");
-        
+        // Fix: Subtract indent (5mm) from max width so it wraps earlier
         const splitText = doc.splitTextToSize(text, contentW - 5);
         doc.text("•", margin, y);
         doc.text(splitText, margin + 5, y);
@@ -273,7 +257,6 @@ export function ReportGenerator({ notes, images, details }: Props) {
         continue;
       }
 
-      // Standard Paragraph
       if (line.length > 0) {
         checkSpace(5);
         doc.setFontSize(10);
@@ -285,13 +268,10 @@ export function ReportGenerator({ notes, images, details }: Props) {
       }
     }
 
-    // ── PHOTO ADDENDUM ──
     if (images.length > 0) {
         doc.addPage();
         pageCount++;
         y = margin;
-        
-        // Header
         doc.setFillColor(240, 242, 245);
         doc.rect(margin, y, contentW, 10, "F");
         doc.setFontSize(12);
@@ -302,36 +282,23 @@ export function ReportGenerator({ notes, images, details }: Props) {
 
         for (let i = 0; i < images.length; i++) {
             const img = images[i];
-            // 2 photos per page max (approx 110mm height each block)
             checkSpace(110); 
-            
             try {
-                // Add Image
                 const imgProps = doc.getImageProperties(img.preview);
                 const ratio = imgProps.width / imgProps.height;
-                const imgW = 120; // Fixed width
+                const imgW = 120;
                 const imgH = imgW / ratio;
-                
-                // Keep ratio but fit on page
                 doc.addImage(img.preview, "JPEG", margin, y, imgW, imgH);
-                
-                // Add Label
                 doc.setFontSize(9);
                 doc.setFont("helvetica", "bold");
                 doc.setTextColor(30);
                 doc.text(`Photo ${i+1}: Item of Interest`, margin + imgW + 5, y + 5);
-                
-                // Add Description
                 doc.setFontSize(9);
                 doc.setFont("helvetica", "normal");
                 doc.setTextColor(80);
-                
-                // Clean description if it repeats "Description:"
                 const cleanDesc = img.analysis.replace(/^Description:\s*/i, "");
                 const splitCaption = doc.splitTextToSize(cleanDesc, contentW - imgW - 10);
-                
                 doc.text(splitCaption, margin + imgW + 5, y + 12);
-                
                 y += imgH + 15;
             } catch (err) {
                 console.error("Error adding image to PDF", err);
@@ -346,7 +313,6 @@ export function ReportGenerator({ notes, images, details }: Props) {
 
   return (
     <div className="space-y-4">
-      {/* Controls */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-slate-400">
           {images.length} photo{images.length !== 1 ? "s" : ""}, {notes.length} note{notes.length !== 1 ? "s" : ""}
@@ -368,57 +334,38 @@ export function ReportGenerator({ notes, images, details }: Props) {
         </div>
       )}
 
-      {/* Preview */}
       {report ? (
         <div className="border border-slate-200 rounded-xl bg-white shadow-sm overflow-hidden">
-          {/* Toolbar */}
           <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100 bg-slate-50">
             <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
               Preview
             </span>
             <div className="flex gap-2">
-              <button
-                onClick={handleCopy}
-                className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 px-2 py-1 rounded hover:bg-slate-100 transition-colors"
-              >
-                {copied ? (
-                  <CheckCheck className="w-3.5 h-3.5 text-green-500" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5" />
-                )}
-                {copied ? "Copied!" : "Copy"}
+              <button onClick={handleCopy} className="text-xs flex gap-1 items-center px-2 py-1 text-slate-600 hover:bg-slate-200 rounded">
+                {copied ? <CheckCheck className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />} Copy
               </button>
-              <button
-                onClick={handleDownloadText}
-                className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 px-2 py-1 rounded hover:bg-slate-100 transition-colors"
-              >
-                <FileType className="w-3.5 h-3.5" />
-                TXT
+              <button onClick={handleDownloadText} className="text-xs flex gap-1 items-center px-2 py-1 text-slate-600 hover:bg-slate-200 rounded">
+                <FileType className="w-3.5 h-3.5" /> TXT
               </button>
-              <button
-                onClick={handleDownloadPDF}
-                className="flex items-center gap-1.5 text-xs bg-slate-900 text-white px-3 py-1 rounded hover:bg-slate-700 transition-colors"
-              >
-                <Download className="w-3.5 h-3.5" />
-                PDF
+              <button onClick={handleDownloadPDF} className="text-xs flex gap-1 items-center px-3 py-1 bg-slate-900 text-white hover:bg-slate-700 rounded">
+                <Download className="w-3.5 h-3.5" /> Download PDF
               </button>
             </div>
           </div>
-
-          {/* Content */}
-          <div className="p-4 max-h-[600px] overflow-y-auto">
-            <pre className="whitespace-pre-wrap font-mono text-xs text-slate-700 leading-relaxed">
-              {report}
-            </pre>
+          <div className="p-6 max-h-[600px] overflow-y-auto">
+            <div className="prose prose-sm max-w-none text-slate-800">
+                {report.split('\n').map((line, i) => (
+                    <p key={i} className={line.startsWith('#') ? "font-bold text-slate-900 mt-4 border-b border-slate-100 pb-1" : "mb-2"}>
+                        {line.replace(/[#*]/g, '')}
+                    </p>
+                ))}
+            </div>
           </div>
         </div>
       ) : (
         <div className="border-2 border-dashed border-slate-100 rounded-xl p-12 text-center text-slate-400 bg-slate-50/50">
           <FileText className="h-10 w-10 mx-auto mb-3 opacity-20" />
-          <p className="text-sm">
-            Fill in details, upload photos, and add voice notes, then click{" "}
-            <strong className="text-slate-500">Generate Report</strong>.
-          </p>
+          <p className="text-sm">Ready to generate.</p>
         </div>
       )}
     </div>

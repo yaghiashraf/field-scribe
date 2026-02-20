@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Upload, Loader2, AlertCircle } from "lucide-react";
+import { Upload, Loader2, AlertCircle, X } from "lucide-react";
 import { analyzeImage } from "../actions/analyze-image";
 
 export interface ImageResult {
@@ -24,7 +24,6 @@ export function PhotoUploader({ onImagesChange }: Props) {
     if (!e.target.files || e.target.files.length === 0) return;
     const files = Array.from(e.target.files);
 
-    // 1. Prepare new images
     const newImages: ImageResult[] = files.map(file => ({
       id: Math.random().toString(36).substring(7),
       file,
@@ -33,12 +32,10 @@ export function PhotoUploader({ onImagesChange }: Props) {
       status: "pending"
     }));
 
-    // 2. Update local state AND parent state
     const updatedImages = [...images, ...newImages];
     setImages(updatedImages);
-    onImagesChange(updatedImages); // Notify parent
+    onImagesChange(updatedImages);
 
-    // 3. Process concurrently
     await Promise.all(newImages.map(async (img) => {
       const formData = new FormData();
       formData.append("file", img.file);
@@ -51,8 +48,8 @@ export function PhotoUploader({ onImagesChange }: Props) {
             pImg.id === img.id 
               ? { ...pImg, status: res.success ? "success" : "error", analysis: res.success ? (res.description || "No description") : (res.error || "Failed") } 
               : pImg
-          ) as ImageResult[]; // Cast to ensure type safety
-          onImagesChange(next); // Notify parent of analysis update
+          ) as ImageResult[];
+          onImagesChange(next);
           return next;
         });
 
@@ -70,6 +67,14 @@ export function PhotoUploader({ onImagesChange }: Props) {
     }));
 
     e.target.value = "";
+  };
+
+  const handleRemove = (id: string) => {
+    setImages(current => {
+        const next = current.filter(img => img.id !== id);
+        onImagesChange(next);
+        return next;
+    });
   };
 
   return (
@@ -108,6 +113,14 @@ export function PhotoUploader({ onImagesChange }: Props) {
                       unoptimized 
                     />
                     
+                    <button 
+                        onClick={(e) => { e.preventDefault(); handleRemove(img.id); }}
+                        className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100 z-10"
+                        title="Remove Photo"
+                    >
+                        <X className="w-3 h-3" />
+                    </button>
+
                     <div className={`absolute inset-0 flex flex-col justify-end p-2 transition-all duration-300
                     ${img.status === 'pending' ? 'bg-black/40' : ''}
                     ${img.status === 'error' ? 'bg-red-900/40' : 'bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100'}

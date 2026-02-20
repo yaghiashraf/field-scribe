@@ -93,7 +93,7 @@ For each finding observed in the data, use this structure. Group findings by maj
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
         ],
-        max_tokens: 3000, // Increased token limit for more detailed reports
+        max_tokens: 3000, 
         temperature: 0.2,
       });
 
