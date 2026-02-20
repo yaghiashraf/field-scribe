@@ -218,28 +218,51 @@ export function ReportGenerator({ notes, images, details }: Props) {
         continue;
       }
 
-      if (line.startsWith("**") || line.includes("**")) {
+      if (line.includes("**")) {
         checkSpace(6);
-        doc.setFontSize(10);
-        doc.setTextColor(30);
         const parts = line.split("**");
         let currentX = margin;
+        let indent = 0;
+
+        // Check for list item indent
         if (line.trim().startsWith("- ") || line.trim().startsWith("• ")) {
-            currentX += 5;
+            indent = 5;
+            currentX += indent;
+            doc.text("•", margin, y);
         }
+
+        doc.setFontSize(10);
+        doc.setTextColor(30);
+
         parts.forEach((part, i) => {
-            if (part === "") return;
-            const cleanPart = part.replace(/^[-•] /, ""); 
-            doc.setFont("helvetica", i % 2 === 1 ? "bold" : "normal");
-            // Fix: check if this specific part will overflow
-            // But we don't wrap "inline" styles easily in jsPDF raw.
-            // Simplified approach for bold wrapping: 
-            // If the value part is long, we just print the label and then the value on next line? No.
-            // We'll rely on the generous buffer.
-            doc.text(cleanPart, currentX, y);
-            currentX += doc.getStringUnitWidth(cleanPart) * 3.52; 
+            if (!part) return;
+            // Odd indices are bold (0: normal, 1: bold, 2: normal...)
+            const isBold = i % 2 === 1;
+            
+            doc.setFont("helvetica", isBold ? "bold" : "normal");
+            
+            // Remove bullet markers from the text part itself if we handled it above
+            let cleanPart = part;
+            if (i === 0 && (cleanPart.trim().startsWith("- ") || cleanPart.trim().startsWith("• "))) {
+                cleanPart = cleanPart.replace(/^[-•] /, "");
+            }
+
+            // Split by words but preserve spaces
+            const words = cleanPart.split(/(\s+)/); 
+            
+            words.forEach(word => {
+                const wordW = doc.getTextWidth(word);
+                // Check if adding this word exceeds the printable area
+                if (currentX + wordW > margin + contentW) {
+                    y += 5; // Move to next line
+                    currentX = margin + indent; // Reset X with indent
+                    checkSpace(5); // Check if we need a new page
+                }
+                doc.text(word, currentX, y);
+                currentX += wordW;
+            });
         });
-        y += 6;
+        y += 6; // Space after paragraph
         continue;
       }
 
