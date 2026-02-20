@@ -1,29 +1,7 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-
-export const metadata: Metadata = {
-  title: "FieldScribe — AI Inspection Report Software | $149 Lifetime",
-  description:
-    "Generate professional home and commercial inspection reports in seconds. Upload photos, record voice notes, and let AI write the report. No subscriptions. $149 one-time.",
-  alternates: { canonical: "https://field-scribe.vercel.app" },
-  openGraph: {
-    title: "FieldScribe — AI Inspection Report Software | $149 Lifetime",
-    description:
-      "Turn site photos and voice notes into professional, liability-proof inspection reports in seconds. Used by 500+ inspectors.",
-    url: "https://field-scribe.vercel.app",
-  },
-};
-import {
-  Check,
-  Shield,
-  FileText,
-  Camera,
-  Mic,
-  Star,
-  ChevronDown,
-  ArrowRight,
-} from "lucide-react";
+import { Check, Zap, Shield, FileText, Camera, Mic, Layout, Star, ChevronDown, ArrowRight, Clock, DollarSign, X } from "lucide-react";
+import { createCheckoutSession } from "./actions/checkout";
 import { ProductShowcase } from "./components/ProductShowcase";
 import { DynamicDemo } from "./components/DynamicDemo";
 import { CheckoutButton } from "./components/CheckoutButton";
@@ -90,10 +68,10 @@ export default async function LandingPage({
               Features
             </a>
             <a
-              href="#demo"
+              href="#comparison"
               className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
             >
-              How it Works
+              Compare
             </a>
             <a
               href="#pricing"
@@ -143,7 +121,7 @@ export default async function LandingPage({
             </p>
 
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-              <CheckoutButton className="group w-full sm:w-auto bg-indigo-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-indigo-700 transition-all hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-75 disabled:cursor-wait" />
+              <CheckoutButton className="group bg-indigo-600 text-white rounded-full font-bold text-lg hover:bg-indigo-700 hover:shadow-xl hover:-translate-y-0.5" />
               <div className="flex items-center gap-2 text-sm text-slate-500">
                 <div className="flex -space-x-2">
                   {[
@@ -198,6 +176,104 @@ export default async function LandingPage({
         </div>
       </section>
 
+      {/* Comparison Table (New Section) */}
+      <section id="comparison" className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">Why inspectors are switching</h2>
+            <p className="text-lg text-slate-500">Stop renting your tools. Start owning your business.</p>
+          </div>
+          
+          <div className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="p-6 text-sm font-semibold text-slate-500 uppercase tracking-wider w-1/3">Feature</th>
+                  <th className="p-6 text-sm font-bold text-indigo-600 uppercase tracking-wider w-1/3 bg-indigo-50/50">FieldScribe</th>
+                  <th className="p-6 text-sm font-semibold text-slate-500 uppercase tracking-wider w-1/3">The "Big Guys"</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                <tr>
+                  <td className="p-6 font-medium text-slate-900">Cost per year</td>
+                  <td className="p-6 font-bold text-green-600 bg-indigo-50/30">$0 / year (Lifetime Deal)</td>
+                  <td className="p-6 text-slate-500">$850 - $1,200 / year</td>
+                </tr>
+                <tr>
+                  <td className="p-6 font-medium text-slate-900">AI Photo Analysis</td>
+                  <td className="p-6 text-slate-700 bg-indigo-50/30 flex items-center gap-2"><Check className="w-5 h-5 text-green-500"/> Included</td>
+                  <td className="p-6 text-slate-500">Extra fee / Upsell</td>
+                </tr>
+                <tr>
+                  <td className="p-6 font-medium text-slate-900">Voice-to-Report</td>
+                  <td className="p-6 text-slate-700 bg-indigo-50/30 flex items-center gap-2"><Check className="w-5 h-5 text-green-500"/> Unlimited</td>
+                  <td className="p-6 text-slate-500">Limited or Manual</td>
+                </tr>
+                <tr>
+                  <td className="p-6 font-medium text-slate-900">Report Ownership</td>
+                  <td className="p-6 text-slate-700 bg-indigo-50/30 flex items-center gap-2"><Check className="w-5 h-5 text-green-500"/> You own the data</td>
+                  <td className="p-6 text-slate-500">Locked if you stop paying</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* ROI Section (New Section) */}
+      <section className="py-24 bg-slate-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-16 items-center">
+          <div>
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-bold mb-6 border border-green-500/30">
+              <DollarSign className="w-3 h-3 mr-1" />
+              Maximize Profit
+            </div>
+            <h2 className="text-4xl font-bold mb-6">The math is simple.</h2>
+            <p className="text-slate-400 text-lg mb-8 leading-relaxed">
+              Most inspection software charges you $79/month forever. That's $9,480 over a 10-year career. 
+              <br /><br />
+              FieldScribe costs $149 once. 
+              <br />
+              <strong>You keep the other $9,331.</strong>
+            </p>
+            <ul className="space-y-4">
+              <li className="flex items-center gap-3">
+                <div className="bg-green-500/20 p-2 rounded-lg">
+                  <Clock className="w-5 h-5 text-green-400" />
+                </div>
+                <span>Save 2+ hours per report with AI writing</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <div className="bg-green-500/20 p-2 rounded-lg">
+                  <Shield className="w-5 h-5 text-green-400" />
+                </div>
+                <span>Reduce liability with objective, standard language</span>
+              </li>
+            </ul>
+          </div>
+          <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700 shadow-2xl relative">
+             <div className="absolute -top-6 -right-6 bg-yellow-400 text-slate-900 font-bold px-4 py-2 rounded-lg shadow-lg rotate-3">
+                Payoff: 2 Inspections
+             </div>
+             <div className="space-y-6">
+                <div className="flex justify-between items-end pb-4 border-b border-slate-700">
+                   <span className="text-slate-400">Software Cost (Year 1)</span>
+                   <span className="text-2xl font-bold text-red-400">$1,000+</span>
+                </div>
+                <div className="flex justify-between items-end pb-4 border-b border-slate-700">
+                   <span className="text-slate-400">FieldScribe Cost</span>
+                   <span className="text-2xl font-bold text-green-400">$149</span>
+                </div>
+                <div className="pt-4">
+                   <div className="text-slate-400 mb-2">Total Savings Year 1</div>
+                   <div className="text-5xl font-extrabold text-white">$851.00</div>
+                   <div className="text-sm text-slate-500 mt-2">+ $1,000 every year after</div>
+                </div>
+             </div>
+          </div>
+        </div>
+      </section>
+
       {/* Features */}
       <section id="features" className="py-24 bg-white relative">
         <div className="max-w-7xl mx-auto px-4">
@@ -206,7 +282,7 @@ export default async function LandingPage({
               Core Features
             </h2>
             <h3 className="text-4xl font-extrabold text-slate-900 mb-6">
-              Everything you need to finish fast.
+              Built for speed. Optimized for protection.
             </h3>
             <p className="text-xl text-slate-500">
               We stripped away the bloat. No complex menus, no &quot;CRM&quot;
@@ -238,12 +314,12 @@ export default async function LandingPage({
       </section>
 
       {/* Demo */}
-      <section id="demo" className="py-24 bg-slate-900 text-white overflow-hidden">
+      <section id="demo" className="py-24 bg-slate-50 text-slate-900 overflow-hidden border-y border-slate-200">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
             See the magic in action.
           </h2>
-          <p className="text-slate-400 max-w-2xl mx-auto mb-12 text-lg">
+          <p className="text-slate-500 max-w-2xl mx-auto mb-12 text-lg">
             Don&apos;t take our word for it. Switch tabs below to see how raw,
             messy field data becomes a polished client-ready report.
           </p>
@@ -251,63 +327,17 @@ export default async function LandingPage({
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="py-24 bg-white border-t border-slate-100">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-slate-900 mb-4">
-            Three steps to a finished report
-          </h2>
-          <p className="text-slate-500 mb-14 text-lg">
-            No training required. Open, capture, and export.
-          </p>
-          <div className="grid md:grid-cols-3 gap-10">
-            {[
-              {
-                step: "1",
-                title: "Capture",
-                desc: "Upload site photos and record voice observations as you walk the property.",
-                color: "bg-blue-500",
-              },
-              {
-                step: "2",
-                title: "Analyze",
-                desc: "AI analyzes each photo for defects and transcribes your voice notes instantly.",
-                color: "bg-violet-500",
-              },
-              {
-                step: "3",
-                title: "Export",
-                desc: "Click Generate — get a polished report. Download as branded PDF or text.",
-                color: "bg-green-500",
-              },
-            ].map(({ step, title, desc, color }) => (
-              <div key={step} className="flex flex-col items-center">
-                <div
-                  className={`${color} w-14 h-14 rounded-2xl text-white text-2xl font-extrabold flex items-center justify-center mb-4 shadow-lg`}
-                >
-                  {step}
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">
-                  {title}
-                </h3>
-                <p className="text-slate-500 text-sm leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Pricing */}
-      <section id="pricing" className="py-24 bg-indigo-50/50">
+      <section id="pricing" className="py-24 bg-white">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold text-slate-900 mb-6">
             One Payment. Lifetime Access.
           </h2>
           <p className="text-xl text-slate-600 mb-12">
-            Stop paying rent on your software. Own it forever.
+            The only inspection software that pays for itself in 2 jobs.
           </p>
 
-          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-indigo-100">
+          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-indigo-100 transform transition-transform hover:scale-105 duration-300">
             {/* Price header */}
             <div className="p-10 bg-gradient-to-br from-indigo-600 to-violet-700 text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16" />
@@ -336,7 +366,7 @@ export default async function LandingPage({
               </ul>
 
               {/* Stripe checkout */}
-              <CheckoutButton className="group w-full bg-slate-900 text-white py-5 rounded-xl font-bold text-lg hover:bg-slate-800 hover:shadow-xl transition-all flex items-center justify-center gap-3 disabled:opacity-75 disabled:cursor-wait" />
+              <CheckoutButton className="group w-full bg-slate-900 text-white rounded-xl font-bold text-lg hover:bg-slate-800 hover:shadow-xl transition-all flex items-center justify-center gap-3 disabled:opacity-75 disabled:cursor-wait" />
 
               <div className="mt-6 flex flex-col items-center gap-2">
                 <div className="flex items-center gap-2 text-xs text-slate-500">
@@ -375,7 +405,7 @@ export default async function LandingPage({
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 bg-white border-t border-slate-100">
+      <section className="py-20 bg-slate-50 border-t border-slate-100">
         <div className="max-w-5xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center">
             What inspectors say
@@ -406,7 +436,7 @@ export default async function LandingPage({
             ].map((t) => (
               <div
                 key={t.name}
-                className="p-6 bg-slate-50 rounded-2xl border border-slate-100"
+                className="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm"
               >
                 <div className="flex mb-3">
                   {Array.from({ length: t.rating }).map((_, i) => (
@@ -638,4 +668,3 @@ function FAQItem({
     </details>
   );
 }
-

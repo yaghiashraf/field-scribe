@@ -19,18 +19,18 @@ function SubmitButton({ className }: { className?: string }) {
     <button
       type="submit"
       disabled={pending}
-      className={className}
+      className={`${className} min-w-[280px] h-[60px] flex items-center justify-center transition-all duration-200`}
     >
       {pending ? (
-        <>
+        <span className="flex items-center justify-center gap-2 animate-pulse">
           <Loader2 className="h-5 w-5 animate-spin" />
-          Processing...
-        </>
+          <span className="font-medium">Redirecting to Stripe...</span>
+        </span>
       ) : (
-        <>
-          <Zap className="h-5 w-5 mr-3 text-yellow-400 group-hover:scale-110 transition-transform" />
+        <span className="flex items-center justify-center gap-3">
+          <Zap className="h-5 w-5 text-yellow-400 group-hover:scale-110 transition-transform" />
           Get Lifetime Access
-        </>
+        </span>
       )}
     </button>
   );
