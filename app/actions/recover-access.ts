@@ -29,14 +29,14 @@ export async function recoverAccess(email: string) {
       }),
       stripe.charges.list({
         customer: customer.id,
-        status: "succeeded",
-        limit: 1,
+        limit: 10, // Check recent charges
       }),
     ]);
 
-    const hasPaid = sessions.data.length > 0 || charges.data.length > 0;
+    const hasPaidSession = sessions.data.length > 0;
+    const hasPaidCharge = charges.data.some((c) => c.status === "succeeded" && c.paid);
 
-    if (!hasPaid) {
+    if (!hasPaidSession && !hasPaidCharge) {
       return { status: "not_found" as const };
     }
 
