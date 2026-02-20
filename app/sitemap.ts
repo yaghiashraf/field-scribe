@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const BASE = "https://field-scribe.vercel.app";
+const BASE = "https://fieldscribe.report";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

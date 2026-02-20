@@ -4,6 +4,7 @@ import { Check, Shield, FileText, Camera, Mic, Star, ChevronDown, ArrowRight, Cl
 import { ProductShowcase } from "./components/ProductShowcase";
 import { DynamicDemo } from "./components/DynamicDemo";
 import { CheckoutButton } from "./components/CheckoutButton";
+import { AnimatedCamera, AnimatedMic, AnimatedShield } from "./components/AnimatedIcons";
 
 interface SearchParams {
   canceled?: string;
@@ -293,19 +294,19 @@ export default async function LandingPage({
 
           <div className="grid md:grid-cols-3 gap-12">
             <FeatureCard
-              icon={<Camera className="h-8 w-8 text-white" />}
+              icon={<AnimatedCamera className="h-8 w-8 text-white" />}
               color="bg-blue-500"
               title="AI Vision Analysis"
               description="Upload 50+ site photos. Our AI auto-detects defects (cracks, rust, leaks) and writes the captions for you."
             />
             <FeatureCard
-              icon={<Mic className="h-8 w-8 text-white" />}
+              icon={<AnimatedMic className="h-8 w-8 text-white" />}
               color="bg-purple-500"
               title="Voice-to-Report"
               description="Walk the site and talk. We transcribe your stream-of-consciousness into structured, professional observations."
             />
             <FeatureCard
-              icon={<Shield className="h-8 w-8 text-white" />}
+              icon={<AnimatedShield className="h-8 w-8 text-white" />}
               color="bg-green-500"
               title="Liability Guard"
               description="Our AI rewrites &apos;fix the leak&apos; into &apos;Qualified plumber to evaluate moisture intrusion&apos;, protecting you from lawsuits."

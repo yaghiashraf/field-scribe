@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/dashboard", "/api/"],
       },
     ],
-    sitemap: "https://field-scribe.vercel.app/sitemap.xml",
-    host: "https://field-scribe.vercel.app",
+    sitemap: "https://fieldscribe.report/sitemap.xml",
+    host: "https://fieldscribe.report",
   };
 }

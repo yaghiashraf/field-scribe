@@ -18,7 +18,7 @@ export async function GET(request: Request) {
 
     // Payment verified — set a long-lived access cookie and send to dashboard
     const response = NextResponse.redirect(`${origin}/dashboard?success=true`);
-    response.cookies.set("fs_access", sessionId, {
+    response.cookies.set("field-scribe-access", "granted", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

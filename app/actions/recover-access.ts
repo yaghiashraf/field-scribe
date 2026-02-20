@@ -7,19 +7,7 @@ export async function recoverAccess(email: string) {
   if (!email) return { status: "error" as const };
 
   try {
-    // 1. "Demo User" Backdoor (Check FIRST to skip Stripe calls if irrelevant)
-    // This allows testing in production without API keys being perfect
-    if (email.toLowerCase().includes('demo')) {
-      const cookieStore = await cookies();
-      cookieStore.set("field-scribe-access", "granted", { 
-        secure: true, 
-        httpOnly: true, 
-        maxAge: 60 * 60 * 24 * 365 * 10 // 10 years (Lifetime)
-      });
-      return { status: "ok" as const };
-    }
-
-    // 2. Search for a customer with this email
+    // 1. Search for a customer with this email
     const customers = await stripe.customers.list({
       email: email,
       limit: 1,
@@ -27,11 +15,32 @@ export async function recoverAccess(email: string) {
 
     if (customers.data.length === 0) {
       // If customer not found in list, we assume they haven't purchased.
-      // (Skipping complex session list calls that might fail if API permissions are restricted)
       return { status: "not_found" as const };
     }
 
-    // 3. If customer found, set session cookie
+    const customer = customers.data[0];
+
+    // 2. Verify payment (Check for completed sessions or charges)
+    const [sessions, charges] = await Promise.all([
+      stripe.checkout.sessions.list({
+        customer: customer.id,
+        status: "complete",
+        limit: 1,
+      }),
+      stripe.charges.list({
+        customer: customer.id,
+        status: "succeeded",
+        limit: 1,
+      }),
+    ]);
+
+    const hasPaid = sessions.data.length > 0 || charges.data.length > 0;
+
+    if (!hasPaid) {
+      return { status: "not_found" as const };
+    }
+
+    // 3. If customer found and paid, set session cookie
     const cookieStore = await cookies();
     cookieStore.set("field-scribe-access", "granted", { 
       secure: true, 
@@ -43,8 +52,6 @@ export async function recoverAccess(email: string) {
 
   } catch (error) {
     console.error("Access recovery failed:", error);
-    // If Stripe fails (e.g. invalid key), we shouldn't block the Demo user.
-    // But since we moved the demo check to the top, this error is purely for real users.
     return { status: "error" as const };
   }
 }
