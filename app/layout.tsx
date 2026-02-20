@@ -4,7 +4,7 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
-const SITE_URL = "https://field-scribe.vercel.app";
+const SITE_URL = "https://fieldscribe.report";
 const SITE_NAME = "FieldScribe";
 const DEFAULT_TITLE = "FieldScribe — AI Inspection Report Software for Field Professionals";
 const DEFAULT_DESC =
@@ -56,14 +56,6 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: DEFAULT_TITLE,
     description: DEFAULT_DESC,
-    images: [
-      {
-        url: `${SITE_URL}/og-image.png`,
-        width: 1200,
-        height: 630,
-        alt: "FieldScribe — AI-powered inspection report software",
-      },
-    ],
   },
 
   twitter: {
@@ -72,7 +64,6 @@ export const metadata: Metadata = {
     creator: "@fieldscribe",
     title: DEFAULT_TITLE,
     description: DEFAULT_DESC,
-    images: [`${SITE_URL}/og-image.png`],
   },
 
   robots: {
@@ -89,12 +80,6 @@ export const metadata: Metadata = {
 
   alternates: {
     canonical: SITE_URL,
-  },
-
-  icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
   },
 
   manifest: "/manifest.json",
